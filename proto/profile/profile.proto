@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package profile;
+
+option go_package = "portfolio-ai/proto/profile";
+
+import "google/protobuf/timestamp.proto";
+
+message Profile {
+  string id = 1;
+  string full_name = 2;
+  string headline = 3;
+  string bio = 4;
+  string email = 5;
+  string phone = 6;
+  string location = 7;
+  string github = 8;
+  string linkedin = 9;
+  string website = 10;
+  string avatar = 11;
+  string resume_url = 12;
+  string availability = 13;
+  string timezone = 14;
+  google.protobuf.Timestamp created_at = 15;
+  google.protobuf.Timestamp updated_at = 16;
+}

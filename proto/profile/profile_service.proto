@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package profile;
+
+option go_package = "portfolio-ai/proto/profile";
+
+import "profile/profile.proto";
+
+service ProfileService {
+  rpc GetProfile(GetProfileRequest) returns (GetProfileResponse);
+  rpc CreateProfile(CreateProfileRequest) returns (CreateProfileResponse);
+  rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
+  rpc DeleteProfile(DeleteProfileRequest) returns (DeleteProfileResponse);
+}
+
+message GetProfileRequest {
+  string id = 1;
+}
+
+message GetProfileResponse {
+  Profile profile = 1;
+}
+
+message CreateProfileRequest {
+  string full_name = 1;
+  string headline = 2;
+  string bio = 3;
+  string email = 4;
+  string phone = 5;
+  string location = 6;
+  string github = 7;
+  string linkedin = 8;
+  string website = 9;
+  string avatar = 10;
+  string resume_url = 11;
+  string availability = 12;
+  string timezone = 13;
+}
+
+message CreateProfileResponse {
+  Profile profile = 1;
+}
+
+message UpdateProfileRequest {
+  string id = 1;
+  string full_name = 2;
+  string headline = 3;
+  string bio = 4;
+  string email = 5;
+  string phone = 6;
+  string location = 7;
+  string github = 8;
+  string linkedin = 9;
+  string website = 10;
+  string avatar = 11;
+  string resume_url = 12;
+  string availability = 13;
+  string timezone = 14;
+}
+
+message UpdateProfileResponse {
+  Profile profile = 1;
+}
+
+message DeleteProfileRequest {
+  string id = 1;
+}
+
+message DeleteProfileResponse {
+  bool success = 1;
+}

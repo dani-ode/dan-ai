@@ -1,0 +1,12 @@
+.git
+.vscode
+.idea
+
+tmp
+# bin
+
+node_modules
+
+storage
+
+.env

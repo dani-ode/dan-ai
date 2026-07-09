@@ -1,0 +1,9 @@
+services:
+  api:
+    environment:
+      APP_ENV: development
+
+    volumes:
+      - ../../:/app
+
+    command: go run ./apps/api
