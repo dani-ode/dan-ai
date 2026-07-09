@@ -22,6 +22,20 @@ var publicMethods = map[string]bool{
 	"/grpc.health.v1.Health/Watch":    true,
 	"/grpc.reflection.v1.ServerReflection/ServerReflectionInfo":   true,
 	"/grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo": true,
+
+	// Visitor endpoints (public, used by frontend without login)
+	"/visitor.VisitorService/RegisterVisitor": true,
+	"/visitor.VisitorService/GetVisitor":      true,
+
+	// Chat endpoints (public, used by frontend visitors)
+	"/chat.ChatService/CreateSession":  true,
+	"/chat.ChatService/ListSessions":   true,
+	"/chat.ChatService/RenameSession":  true,
+	"/chat.ChatService/DeleteSession":  true,
+	"/chat.ChatService/CreateMessage":  true,
+	"/chat.ChatService/ListMessages":   true,
+	"/chat.ChatService/DeleteMessage":  true,
+	"/chat.ChatService/SendChatMessage": true,
 }
 
 // UnaryAuth returns a unary server interceptor that validates JWT tokens.

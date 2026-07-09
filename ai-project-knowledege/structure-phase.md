@@ -26,55 +26,51 @@ Core Application
 ↓
 
 Phase 3
-────────────────────
-AI Knowledge
+────────────────
+Knowledge Base
 
-• Knowledge Documents
-• Knowledge Chunks
-• Visitors
-• Chat
-• Prompt
-• AI Models
+Knowledge Documents
+Knowledge Chunks
 
 ↓
 
 Phase 4
-────────────────────
+────────────────
 Background Processing
 
-• Kafka
-• Outbox Pattern
-• Event Producer
-• Event Worker
-• Embedding Worker
+Kafka
+Outbox
+Event Worker
+Embedding Worker
 
 ↓
 
 Phase 5
-────────────────────
-Vector Database
+────────────────
+Vector Search
 
-• Chunking
-• Embedding
-• Milvus
-• Semantic Search
+Chunking
+Embedding
+Milvus
 
 ↓
 
 Phase 6
-────────────────────
+────────────────
 AI Agent
 
-• RAG
-• Prompt Builder
-• Conversation Memory
-• Tool Calling
+LLM Provider
+AI Models (aktif digunakan)
+Prompt Builder
+Conversation Memory
+RAG
+Tool Calling (ai_tools mulai digunakan)
 
 ↓
 
 Phase 7
-────────────────────
+────────────────
 Realtime
 
-• Streaming Response
-• Typing Animation
+gRPC Server Streaming
+Typing Animation

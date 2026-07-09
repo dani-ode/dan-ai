@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package chat;
+
+option go_package = "portfolio-ai/proto/chat";
+
+import "google/protobuf/timestamp.proto";
+
+message ChatSession {
+  string id = 1;
+  string visitor_id = 2;
+  string prompt_id = 3;
+  string title = 4;
+  google.protobuf.Timestamp started_at = 5;
+  google.protobuf.Timestamp ended_at = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message ChatMessage {
+  string id = 1;
+  string session_id = 2;
+  string role = 3;
+  string content = 4;
+  string model = 5;
+  int32 prompt_tokens = 6;
+  int32 completion_tokens = 7;
+  int32 latency_ms = 8;
+  string status = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}

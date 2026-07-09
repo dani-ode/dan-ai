@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package prompt;
+
+option go_package = "portfolio-ai/proto/prompt";
+
+import "prompt/prompt.proto";
+
+service PromptService {
+  rpc CreatePrompt(CreatePromptRequest) returns (CreatePromptResponse);
+  rpc GetPrompt(GetPromptRequest) returns (GetPromptResponse);
+  rpc ListPrompts(ListPromptsRequest) returns (ListPromptsResponse);
+  rpc UpdatePrompt(UpdatePromptRequest) returns (UpdatePromptResponse);
+  rpc DeletePrompt(DeletePromptRequest) returns (DeletePromptResponse);
+}
+
+message CreatePromptRequest {
+  string name = 1;
+  string system_prompt = 2;
+  string description = 3;
+  string model_id = 4;
+  bool active = 5;
+}
+
+message CreatePromptResponse {
+  Prompt prompt = 1;
+}
+
+message GetPromptRequest {
+  string id = 1;
+}
+
+message GetPromptResponse {
+  Prompt prompt = 1;
+}
+
+message ListPromptsRequest {
+  bool active_only = 1;
+}
+
+message ListPromptsResponse {
+  repeated Prompt prompts = 1;
+}
+
+message UpdatePromptRequest {
+  string id = 1;
+  string name = 2;
+  string system_prompt = 3;
+  string description = 4;
+  string model_id = 5;
+  bool active = 6;
+}
+
+message UpdatePromptResponse {
+  Prompt prompt = 1;
+}
+
+message DeletePromptRequest {
+  string id = 1;
+}
+
+message DeletePromptResponse {
+  bool success = 1;
+}

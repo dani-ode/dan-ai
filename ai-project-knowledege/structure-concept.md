@@ -13,20 +13,20 @@
         │               │                           │
         ▼               ▼                           ▼
    PostgreSQL      Kafka Producer             AI Module
-(Source of Truth)      │                 (RAG, Prompt Builder,
+(Source of Truth)       │                 (RAG, Prompt Builder,
                         │                  Tool Calling)
                         ▼                           │
-                    Kafka Cluster                  │
-                  ┌───────────────┐                │
-                  │               │                │
-                  ▼               ▼                │
-          Event Worker   Embedding Worker          │
-                                 │                │
-                                 ▼                │
-                              Milvus ◄────────────┘
-                                 │
-                                 ▼
-                      Semantic Search (Top-K)
-                                 │
-                                 ▼
+                    Kafka Cluster                   │
+                  ┌───────────────┐                 │
+                  │               │                 │
+                  ▼               ▼                 │
+          Event Worker   Embedding Worker           │
+                                  │                 │
+                                  ▼                 │
+                               Milvus ◄─────────────┘
+                                  │
+                                  ▼
+                       Semantic Search (Top-K)
+                                  │
+                                  ▼
                      Gemini / OpenAI / Ollama

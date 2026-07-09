@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package aimodel;
+
+option go_package = "portfolio-ai/proto/aimodel";
+
+message AIModel {
+  string id = 1;
+  string name = 2;
+  string provider = 3;
+  double temperature = 4;
+  int32 max_tokens = 5;
+  int32 context_window = 6;
+  bool supports_tools = 7;
+  bool supports_stream = 8;
+  bool enabled = 9;
+}

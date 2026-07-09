@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package prompt;
+
+option go_package = "portfolio-ai/proto/prompt";
+
+import "google/protobuf/timestamp.proto";
+
+message Prompt {
+  string id = 1;
+  string name = 2;
+  string system_prompt = 3;
+  string description = 4;
+  string model_id = 5;
+  bool active = 6;
+  int32 version = 7;
+  google.protobuf.Timestamp created_at = 8;
+}

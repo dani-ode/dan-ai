@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package aimodel;
+
+option go_package = "portfolio-ai/proto/aimodel";
+
+import "aimodel/aimodel.proto";
+
+service AIModelService {
+  rpc CreateAIModel(CreateAIModelRequest) returns (CreateAIModelResponse);
+  rpc GetAIModel(GetAIModelRequest) returns (GetAIModelResponse);
+  rpc ListAIModels(ListAIModelsRequest) returns (ListAIModelsResponse);
+  rpc UpdateAIModel(UpdateAIModelRequest) returns (UpdateAIModelResponse);
+  rpc DeleteAIModel(DeleteAIModelRequest) returns (DeleteAIModelResponse);
+}
+
+message CreateAIModelRequest {
+  string name = 1;
+  string provider = 2;
+  double temperature = 3;
+  int32 max_tokens = 4;
+  int32 context_window = 5;
+  bool supports_tools = 6;
+  bool supports_stream = 7;
+  bool enabled = 8;
+}
+
+message CreateAIModelResponse {
+  AIModel ai_model = 1;
+}
+
+message GetAIModelRequest {
+  string id = 1;
+}
+
+message GetAIModelResponse {
+  AIModel ai_model = 1;
+}
+
+message ListAIModelsRequest {
+  bool enabled_only = 1;
+}
+
+message ListAIModelsResponse {
+  repeated AIModel ai_models = 1;
+}
+
+message UpdateAIModelRequest {
+  string id = 1;
+  string name = 2;
+  string provider = 3;
+  double temperature = 4;
+  int32 max_tokens = 5;
+  int32 context_window = 6;
+  bool supports_tools = 7;
+  bool supports_stream = 8;
+  bool enabled = 9;
+}
+
+message UpdateAIModelResponse {
+  AIModel ai_model = 1;
+}
+
+message DeleteAIModelRequest {
+  string id = 1;
+}
+
+message DeleteAIModelResponse {
+  bool success = 1;
+}

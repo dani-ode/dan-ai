@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package visitor;
+
+option go_package = "portfolio-ai/proto/visitor";
+
+import "visitor/visitor.proto";
+
+service VisitorService {
+  rpc RegisterVisitor(RegisterVisitorRequest) returns (RegisterVisitorResponse);
+  rpc GetVisitor(GetVisitorRequest) returns (GetVisitorResponse);
+}
+
+message RegisterVisitorRequest {
+  string visitor_id = 1;
+}
+
+message RegisterVisitorResponse {
+  Visitor visitor = 1;
+}
+
+message GetVisitorRequest {
+  string id = 1;
+}
+
+message GetVisitorResponse {
+  Visitor visitor = 1;
+}

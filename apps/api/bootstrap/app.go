@@ -7,13 +7,29 @@ import (
 
 	"portfolio-ai/internal/auth/jwt"
 	authgrpc "portfolio-ai/internal/auth/grpc"
-	"portfolio-ai/internal/profile/repository"
-	"portfolio-ai/internal/profile/service"
+	aimodelrepo "portfolio-ai/internal/aimodel/repository"
+	aimodelsvc "portfolio-ai/internal/aimodel/service"
+	aimodelgrpc "portfolio-ai/internal/aimodel/grpc"
+	chatrepo "portfolio-ai/internal/chat/repository"
+	chatsvc "portfolio-ai/internal/chat/service"
+	chatgrpc "portfolio-ai/internal/chat/grpc"
+	profilerepo "portfolio-ai/internal/profile/repository"
+	profilesvc "portfolio-ai/internal/profile/service"
 	profilegrpc "portfolio-ai/internal/profile/grpc"
+	promptrepo "portfolio-ai/internal/prompt/repository"
+	promptsvc "portfolio-ai/internal/prompt/service"
+	promptgrpc "portfolio-ai/internal/prompt/grpc"
+	visitorrepo "portfolio-ai/internal/visitor/repository"
+	visitorsvc "portfolio-ai/internal/visitor/service"
+	visitorgrpc "portfolio-ai/internal/visitor/grpc"
 	"portfolio-ai/pkg/config"
 	"portfolio-ai/pkg/logger"
+	aimodelpb "portfolio-ai/proto/aimodel"
 	pb "portfolio-ai/proto/auth"
+	chatpb "portfolio-ai/proto/chat"
 	profilepb "portfolio-ai/proto/profile"
+	promptpb "portfolio-ai/proto/prompt"
+	visitorpb "portfolio-ai/proto/visitor"
 
 	"google.golang.org/grpc"
 	gormdb "gorm.io/gorm"
@@ -58,11 +74,39 @@ func NewApp() (*App, error) {
 	logger.Info("Auth service registered")
 
 	// 7. Initialize Profile module
-	profileRepo := repository.NewPostgresRepository(db)
-	profileSvc := service.NewService(profileRepo)
-	profileHnd := profilegrpc.NewHandler(profileSvc)
-	profilepb.RegisterProfileServiceServer(grpcServer, profileHnd)
+	profileRepo := profilerepo.NewPostgresRepository(db)
+	profileService := profilesvc.NewService(profileRepo)
+	profileHandler := profilegrpc.NewHandler(profileService)
+	profilepb.RegisterProfileServiceServer(grpcServer, profileHandler)
 	logger.Info("Profile service registered")
+
+	// 8. Initialize Prompt module
+	promptRepo := promptrepo.NewPostgresRepository(db)
+	promptService := promptsvc.NewService(promptRepo)
+	promptHandler := promptgrpc.NewHandler(promptService)
+	promptpb.RegisterPromptServiceServer(grpcServer, promptHandler)
+	logger.Info("Prompt service registered")
+
+	// 9. Initialize Visitor module
+	visitorRepo := visitorrepo.NewPostgresRepository(db)
+	visitorService := visitorsvc.NewService(visitorRepo)
+	visitorHandler := visitorgrpc.NewHandler(visitorService)
+	visitorpb.RegisterVisitorServiceServer(grpcServer, visitorHandler)
+	logger.Info("Visitor service registered")
+
+	// 10. Initialize Chat module
+	chatRepo := chatrepo.NewPostgresRepository(db)
+	chatService := chatsvc.NewService(chatRepo)
+	chatHandler := chatgrpc.NewHandler(chatService, visitorService)
+	chatpb.RegisterChatServiceServer(grpcServer, chatHandler)
+	logger.Info("Chat service registered")
+
+	// 11. Initialize AIModel module
+	aimodelRepo := aimodelrepo.NewPostgresRepository(db)
+	aimodelService := aimodelsvc.NewService(aimodelRepo)
+	aimodelHandler := aimodelgrpc.NewHandler(aimodelService)
+	aimodelpb.RegisterAIModelServiceServer(grpcServer, aimodelHandler)
+	logger.Info("AIModel service registered")
 
 	return &App{
 		Config:     cfg,
