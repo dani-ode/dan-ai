@@ -3,8 +3,12 @@ package service
 
 import (
 	"context"
+	"log"
+
 	"portfolio-ai/internal/experience/entity"
 	"portfolio-ai/internal/experience/repository"
+	knowledgeBuilder "portfolio-ai/internal/knowledge/builder"
+	knowledgeService "portfolio-ai/internal/knowledge/service"
 	"portfolio-ai/pkg/ulid"
 )
 
@@ -18,12 +22,16 @@ type Service interface {
 }
 
 type service struct {
-	repo repository.Repository
+	repo         repository.Repository
+	knowledgeSvc knowledgeService.Service
 }
 
 // NewService creates a new Service instance.
-func NewService(repo repository.Repository) Service {
-	return &service{repo: repo}
+func NewService(repo repository.Repository, knowledgeSvc knowledgeService.Service) Service {
+	return &service{
+		repo:         repo,
+		knowledgeSvc: knowledgeSvc,
+	}
 }
 
 func (s *service) List(ctx context.Context, page, limit int) ([]*entity.Experience, int64, error) {
@@ -38,11 +46,29 @@ func (s *service) Create(ctx context.Context, experience *entity.Experience) err
 	if experience.ID == "" {
 		experience.ID = ulid.New()
 	}
-	return s.repo.Create(ctx, experience)
+	err := s.repo.Create(ctx, experience)
+	if err == nil && s.knowledgeSvc != nil {
+		go func(e entity.Experience) {
+			title, content := knowledgeBuilder.BuildExperienceDocument(e)
+			if err := s.knowledgeSvc.Sync(context.Background(), "experience", e.ID, title, content); err != nil {
+				log.Printf("Failed to sync experience knowledge: %v\n", err)
+			}
+		}(*experience)
+	}
+	return err
 }
 
 func (s *service) Update(ctx context.Context, experience *entity.Experience) error {
-	return s.repo.Update(ctx, experience)
+	err := s.repo.Update(ctx, experience)
+	if err == nil && s.knowledgeSvc != nil {
+		go func(e entity.Experience) {
+			title, content := knowledgeBuilder.BuildExperienceDocument(e)
+			if err := s.knowledgeSvc.Sync(context.Background(), "experience", e.ID, title, content); err != nil {
+				log.Printf("Failed to sync experience knowledge: %v\n", err)
+			}
+		}(*experience)
+	}
+	return err
 }
 
 func (s *service) Delete(ctx context.Context, id string) error {

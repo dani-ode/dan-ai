@@ -3,6 +3,10 @@ package service
 
 import (
 	"context"
+	"log"
+
+	knowledgeBuilder "portfolio-ai/internal/knowledge/builder"
+	knowledgeService "portfolio-ai/internal/knowledge/service"
 	"portfolio-ai/internal/skill/entity"
 	"portfolio-ai/internal/skill/repository"
 	"portfolio-ai/pkg/ulid"
@@ -18,12 +22,15 @@ type Service interface {
 }
 
 type service struct {
-	repo repository.Repository
+	repo         repository.Repository
+	knowledgeSvc knowledgeService.Service
 }
 
-// NewService creates a new Service instance.
-func NewService(repo repository.Repository) Service {
-	return &service{repo: repo}
+func NewService(repo repository.Repository, knowledgeSvc knowledgeService.Service) Service {
+	return &service{
+		repo:         repo,
+		knowledgeSvc: knowledgeSvc,
+	}
 }
 
 func (s *service) List(ctx context.Context, page, limit int) ([]*entity.Skill, int64, error) {
@@ -38,11 +45,29 @@ func (s *service) Create(ctx context.Context, skill *entity.Skill) error {
 	if skill.ID == "" {
 		skill.ID = ulid.New()
 	}
-	return s.repo.Create(ctx, skill)
+	err := s.repo.Create(ctx, skill)
+	if err == nil && s.knowledgeSvc != nil {
+		go func(sk entity.Skill) {
+			title, content := knowledgeBuilder.BuildSkillDocument(sk)
+			if err := s.knowledgeSvc.Sync(context.Background(), "skill", sk.ID, title, content); err != nil {
+				log.Printf("Failed to sync skill knowledge: %v\n", err)
+			}
+		}(*skill)
+	}
+	return err
 }
 
 func (s *service) Update(ctx context.Context, skill *entity.Skill) error {
-	return s.repo.Update(ctx, skill)
+	err := s.repo.Update(ctx, skill)
+	if err == nil && s.knowledgeSvc != nil {
+		go func(sk entity.Skill) {
+			title, content := knowledgeBuilder.BuildSkillDocument(sk)
+			if err := s.knowledgeSvc.Sync(context.Background(), "skill", sk.ID, title, content); err != nil {
+				log.Printf("Failed to sync skill knowledge: %v\n", err)
+			}
+		}(*skill)
+	}
+	return err
 }
 
 func (s *service) Delete(ctx context.Context, id string) error {

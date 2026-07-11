@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package portfolio.knowledge.v1;
+
+option go_package = "portfolio-ai/proto/knowledge";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+message KnowledgeDocument {
+  string id = 1;
+  string source_type = 2; // e.g., "profile", "project", "experience", "certificate", "skill"
+  string source_id = 3;
+  string title = 4;
+  string content = 5;
+  string checksum = 6;
+  int32 version = 7;
+  string status = 8; // "Pending", "Embedding", "Embedded", "Failed"
+  string embedding_model = 9;
+  google.protobuf.Timestamp last_embedded_at = 10;
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
+}
+
+message KnowledgeChunk {
+  string id = 1;
+  string document_id = 2;
+  int32 chunk_index = 3;
+  string content = 4;
+  int32 token_count = 5;
+  string embedding_model = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+// Request and Response for CRUD
+message GetDocumentRequest {
+  string id = 1;
+}
+
+message ListDocumentsRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  string source_type = 3; // optional filter
+}
+
+message ListDocumentsResponse {
+  repeated KnowledgeDocument documents = 1;
+  int32 total_count = 2;
+}
+
+message ListChunksRequest {
+  string document_id = 1;
+}
+
+message ListChunksResponse {
+  repeated KnowledgeChunk chunks = 1;
+}
+
+service KnowledgeService {
+  rpc GetDocument(GetDocumentRequest) returns (KnowledgeDocument);
+  rpc ListDocuments(ListDocumentsRequest) returns (ListDocumentsResponse);
+  rpc ListChunks(ListChunksRequest) returns (ListChunksResponse);
+}

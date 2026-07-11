@@ -3,8 +3,12 @@ package service
 
 import (
 	"context"
+	"log"
+
 	"portfolio-ai/internal/certificate/entity"
 	"portfolio-ai/internal/certificate/repository"
+	knowledgeBuilder "portfolio-ai/internal/knowledge/builder"
+	knowledgeService "portfolio-ai/internal/knowledge/service"
 	"portfolio-ai/pkg/ulid"
 )
 
@@ -18,12 +22,16 @@ type Service interface {
 }
 
 type service struct {
-	repo repository.Repository
+	repo         repository.Repository
+	knowledgeSvc knowledgeService.Service
 }
 
 // NewService creates a new Service instance.
-func NewService(repo repository.Repository) Service {
-	return &service{repo: repo}
+func NewService(repo repository.Repository, knowledgeSvc knowledgeService.Service) Service {
+	return &service{
+		repo:         repo,
+		knowledgeSvc: knowledgeSvc,
+	}
 }
 
 func (s *service) List(ctx context.Context, page, limit int) ([]*entity.Certificate, int64, error) {
@@ -34,15 +42,33 @@ func (s *service) Get(ctx context.Context, id string) (*entity.Certificate, erro
 	return s.repo.Get(ctx, id)
 }
 
-func (s *service) Create(ctx context.Context, cert *entity.Certificate) error {
-	if cert.ID == "" {
-		cert.ID = ulid.New()
+func (s *service) Create(ctx context.Context, certificate *entity.Certificate) error {
+	if certificate.ID == "" {
+		certificate.ID = ulid.New()
 	}
-	return s.repo.Create(ctx, cert)
+	err := s.repo.Create(ctx, certificate)
+	if err == nil && s.knowledgeSvc != nil {
+		go func(c entity.Certificate) {
+			title, content := knowledgeBuilder.BuildCertificateDocument(c)
+			if err := s.knowledgeSvc.Sync(context.Background(), "certificate", c.ID, title, content); err != nil {
+				log.Printf("Failed to sync certificate knowledge: %v\n", err)
+			}
+		}(*certificate)
+	}
+	return err
 }
 
-func (s *service) Update(ctx context.Context, cert *entity.Certificate) error {
-	return s.repo.Update(ctx, cert)
+func (s *service) Update(ctx context.Context, certificate *entity.Certificate) error {
+	err := s.repo.Update(ctx, certificate)
+	if err == nil && s.knowledgeSvc != nil {
+		go func(c entity.Certificate) {
+			title, content := knowledgeBuilder.BuildCertificateDocument(c)
+			if err := s.knowledgeSvc.Sync(context.Background(), "certificate", c.ID, title, content); err != nil {
+				log.Printf("Failed to sync certificate knowledge: %v\n", err)
+			}
+		}(*certificate)
+	}
+	return err
 }
 
 func (s *service) Delete(ctx context.Context, id string) error {

@@ -10,6 +10,9 @@ import (
 	aimodelrepo "portfolio-ai/internal/aimodel/repository"
 	aimodelsvc "portfolio-ai/internal/aimodel/service"
 	aimodelgrpc "portfolio-ai/internal/aimodel/grpc"
+	knowledgerepo "portfolio-ai/internal/knowledge/repository"
+	knowledgesvc "portfolio-ai/internal/knowledge/service"
+	knowledgegrpc "portfolio-ai/internal/knowledge/grpc"
 	chatrepo "portfolio-ai/internal/chat/repository"
 	chatsvc "portfolio-ai/internal/chat/service"
 	chatgrpc "portfolio-ai/internal/chat/grpc"
@@ -40,6 +43,7 @@ import (
 	"portfolio-ai/pkg/config"
 	"portfolio-ai/pkg/logger"
 	aimodelpb "portfolio-ai/proto/aimodel"
+	knowledgepb "portfolio-ai/proto/knowledge"
 	pb "portfolio-ai/proto/auth"
 	chatpb "portfolio-ai/proto/chat"
 	profilepb "portfolio-ai/proto/profile"
@@ -93,9 +97,16 @@ func NewApp() (*App, error) {
 	pb.RegisterAuthServiceServer(grpcServer, authHandler)
 	logger.Info("Auth service registered")
 
+	// 6.5 Initialize Knowledge module (core of Phase 3)
+	knowledgeRepo := knowledgerepo.NewPostgresKnowledgeRepository(db)
+	knowledgeService := knowledgesvc.NewService(knowledgeRepo)
+	knowledgeHandler := knowledgegrpc.NewKnowledgeHandler(knowledgeService)
+	knowledgepb.RegisterKnowledgeServiceServer(grpcServer, knowledgeHandler)
+	logger.Info("Knowledge service registered")
+
 	// 7. Initialize Profile module
 	profileRepo := profilerepo.NewPostgresRepository(db)
-	profileService := profilesvc.NewService(profileRepo)
+	profileService := profilesvc.NewService(profileRepo, knowledgeService)
 	profileHandler := profilegrpc.NewHandler(profileService)
 	profilepb.RegisterProfileServiceServer(grpcServer, profileHandler)
 	logger.Info("Profile service registered")
@@ -130,14 +141,14 @@ func NewApp() (*App, error) {
 
 	// 12. Initialize Project module
 	projectRepo := projectrepo.NewPostgresRepository(db)
-	projectService := projectsvc.NewService(projectRepo)
+	projectService := projectsvc.NewService(projectRepo, knowledgeService)
 	projectHandler := projectgrpc.NewHandler(projectService)
 	projectpb.RegisterProjectServiceServer(grpcServer, projectHandler)
 	logger.Info("Project service registered")
 
 	// 13. Initialize Experience module
 	experienceRepo := experiencerepo.NewPostgresRepository(db)
-	experienceService := experiencesvc.NewService(experienceRepo)
+	experienceService := experiencesvc.NewService(experienceRepo, knowledgeService)
 	experienceHandler := experiencegrpc.NewHandler(experienceService)
 	experiencepb.RegisterExperienceServiceServer(grpcServer, experienceHandler)
 	logger.Info("Experience service registered")
@@ -151,14 +162,14 @@ func NewApp() (*App, error) {
 
 	// 15. Initialize Certificate module
 	certRepo := certrepo.NewPostgresRepository(db)
-	certService := certsvc.NewService(certRepo)
+	certService := certsvc.NewService(certRepo, knowledgeService)
 	certHandler := certgrpc.NewHandler(certService)
 	certpb.RegisterCertificateServiceServer(grpcServer, certHandler)
 	logger.Info("Certificate service registered")
 
 	// 16. Initialize Skill module
 	skillRepo := skillrepo.NewPostgresRepository(db)
-	skillService := skillsvc.NewService(skillRepo)
+	skillService := skillsvc.NewService(skillRepo, knowledgeService)
 	skillHandler := skillgrpc.NewHandler(skillService)
 	skillpb.RegisterSkillServiceServer(grpcServer, skillHandler)
 	logger.Info("Skill service registered")
