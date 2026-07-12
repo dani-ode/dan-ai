@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"time"
 
-	"portfolio-ai/internal/knowledge/chunker"
 	"portfolio-ai/internal/knowledge/entity"
 	"portfolio-ai/internal/knowledge/repository"
+	outboxEntity "portfolio-ai/internal/outbox/entity"
 
 	"github.com/oklog/ulid/v2"
 )
@@ -87,23 +87,19 @@ func (s *service) Sync(ctx context.Context, sourceType, sourceID, title, content
 		}
 	}
 
-	// 3. Chunking
-	chunkStrings := chunker.Chunk(content, 500) // limit 500 chars for now
-	var chunks []entity.KnowledgeChunk
-	for i, chunkText := range chunkStrings {
-		chunks = append(chunks, entity.KnowledgeChunk{
-			ID:         ulid.Make().String(),
-			DocumentID: docID,
-			ChunkIndex: int32(i),
-			Content:    chunkText,
-			TokenCount: int32(len(chunkText) / 4), // rough estimate of tokens
-			CreatedAt:  time.Now(),
-		})
+	// 3. Create OutboxEvent to trigger the AI Embedding Worker
+	outboxEvent := &outboxEntity.OutboxEvent{
+		ID:          ulid.Make().String(),
+		Aggregate:   sourceType,
+		AggregateID: sourceID,
+		EventType:   "updated",
+		Payload:     []byte(`{"source_type":"` + sourceType + `","source_id":"` + sourceID + `"}`),
+		Published:   false,
+		RetryCount:  0,
+		CreatedAt:   time.Now(),
 	}
-
-	// 4. Save Chunks
-	if err := s.repo.CreateChunks(ctx, chunks); err != nil {
-		return fmt.Errorf("failed to create chunks: %w", err)
+	if err := s.repo.CreateOutboxEvent(ctx, outboxEvent); err != nil {
+		return fmt.Errorf("failed to create outbox event: %w", err)
 	}
 
 	return nil

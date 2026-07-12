@@ -30,6 +30,15 @@ type Config struct {
 		JWTSecret     string
 		JWTExpiry     time.Duration
 	}
+	Kafka struct {
+		Brokers []string
+	}
+	Milvus struct {
+		Address string
+	}
+	AI struct {
+		GeminiAPIKey string
+	}
 }
 
 var Current *Config
@@ -66,6 +75,15 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("invalid JWT_EXPIRE: %w", err)
 	}
 	cfg.Auth.JWTExpiry = jwtExpiry
+
+	// Kafka config
+	cfg.Kafka.Brokers = []string{getEnv("KAFKA_BROKER", "localhost:9092")}
+
+	// Milvus config
+	cfg.Milvus.Address = getEnv("MILVUS_ADDRESS", "localhost:19530")
+
+	// AI config
+	cfg.AI.GeminiAPIKey = getEnv("GEMINI_API_KEY", "")
 
 	Current = cfg
 	return cfg, nil

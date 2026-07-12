@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"portfolio-ai/internal/knowledge/entity"
+	outboxEntity "portfolio-ai/internal/outbox/entity"
 	"gorm.io/gorm"
 )
 
@@ -20,6 +21,9 @@ type KnowledgeRepository interface {
 	CreateChunks(ctx context.Context, chunks []entity.KnowledgeChunk) error
 	DeleteChunksByDocumentID(ctx context.Context, documentID string) error
 	ListChunksByDocumentID(ctx context.Context, documentID string) ([]entity.KnowledgeChunk, error)
+
+	// Outbox
+	CreateOutboxEvent(ctx context.Context, event *outboxEntity.OutboxEvent) error
 }
 
 type postgresKnowledgeRepository struct {
@@ -99,4 +103,10 @@ func (r *postgresKnowledgeRepository) ListChunksByDocumentID(ctx context.Context
 	var chunks []entity.KnowledgeChunk
 	err := r.db.WithContext(ctx).Where("document_id = ?", documentID).Order("chunk_index ASC").Find(&chunks).Error
 	return chunks, err
+}
+
+// Outbox
+
+func (r *postgresKnowledgeRepository) CreateOutboxEvent(ctx context.Context, event *outboxEntity.OutboxEvent) error {
+	return r.db.WithContext(ctx).Create(event).Error
 }
