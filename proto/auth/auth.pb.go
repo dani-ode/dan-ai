@@ -138,7 +138,7 @@ const file_auth_auth_proto_rawDesc = "" +
 	"\n" +
 	"expires_at\x18\x02 \x01(\tR\texpiresAt2?\n" +
 	"\vAuthService\x120\n" +
-	"\x05Login\x12\x12.auth.LoginRequest\x1a\x13.auth.LoginResponseB\x19Z\x17portfolio-ai/proto/authb\x06proto3"
+	"\x05Login\x12\x12.auth.LoginRequest\x1a\x13.auth.LoginResponseB\x13Z\x11dan-ai/proto/authb\x06proto3"
 
 var (
 	file_auth_auth_proto_rawDescOnce sync.Once

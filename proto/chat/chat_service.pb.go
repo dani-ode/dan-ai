@@ -934,7 +934,7 @@ const file_chat_chat_service_proto_rawDesc = "" +
 	"\rCreateMessage\x12\x1a.chat.CreateMessageRequest\x1a\x1b.chat.CreateMessageResponse\x12E\n" +
 	"\fListMessages\x12\x19.chat.ListMessagesRequest\x1a\x1a.chat.ListMessagesResponse\x12H\n" +
 	"\rDeleteMessage\x12\x1a.chat.DeleteMessageRequest\x1a\x1b.chat.DeleteMessageResponse\x12N\n" +
-	"\x0fSendChatMessage\x12\x1c.chat.SendChatMessageRequest\x1a\x1d.chat.SendChatMessageResponseB\x19Z\x17portfolio-ai/proto/chatb\x06proto3"
+	"\x0fSendChatMessage\x12\x1c.chat.SendChatMessageRequest\x1a\x1d.chat.SendChatMessageResponseB\x13Z\x11dan-ai/proto/chatb\x06proto3"
 
 var (
 	file_chat_chat_service_proto_rawDescOnce sync.Once

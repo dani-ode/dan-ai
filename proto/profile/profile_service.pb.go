@@ -628,7 +628,7 @@ const file_profile_profile_service_proto_rawDesc = "" +
 	"GetProfile\x12\x1a.profile.GetProfileRequest\x1a\x1b.profile.GetProfileResponse\x12N\n" +
 	"\rCreateProfile\x12\x1d.profile.CreateProfileRequest\x1a\x1e.profile.CreateProfileResponse\x12N\n" +
 	"\rUpdateProfile\x12\x1d.profile.UpdateProfileRequest\x1a\x1e.profile.UpdateProfileResponse\x12N\n" +
-	"\rDeleteProfile\x12\x1d.profile.DeleteProfileRequest\x1a\x1e.profile.DeleteProfileResponseB\x1cZ\x1aportfolio-ai/proto/profileb\x06proto3"
+	"\rDeleteProfile\x12\x1d.profile.DeleteProfileRequest\x1a\x1e.profile.DeleteProfileResponseB\x16Z\x14dan-ai/proto/profileb\x06proto3"
 
 var (
 	file_profile_profile_service_proto_rawDescOnce sync.Once

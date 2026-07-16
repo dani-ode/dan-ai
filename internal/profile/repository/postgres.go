@@ -3,7 +3,7 @@ package repository
 
 import (
 	"context"
-	"portfolio-ai/internal/profile/entity"
+	"dan-ai/internal/profile/entity"
 
 	"gorm.io/gorm"
 )

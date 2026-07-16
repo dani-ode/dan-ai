@@ -3,9 +3,9 @@ package service
 
 import (
 	"context"
-	"portfolio-ai/internal/aimodel/entity"
-	"portfolio-ai/internal/aimodel/repository"
-	"portfolio-ai/pkg/ulid"
+	"dan-ai/internal/aimodel/entity"
+	"dan-ai/internal/aimodel/repository"
+	"dan-ai/pkg/ulid"
 )
 
 // Service defines the interface for AIModel business operations.

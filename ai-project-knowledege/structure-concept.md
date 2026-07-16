@@ -1,32 +1,30 @@
-                    Internet
-                        │
-        ┌───────────────┴───────────────┐
-        │                               │
-   gRPCUI (Admin)                  Vue Frontend
-        │                               │
-        └───────────────┬───────────────┘
-                        │
-                  gRPC Server
-              (Modular Monolith)
-                        │
-        ┌───────────────┼───────────────────────────┐
-        │               │                           │
-        ▼               ▼                           ▼
-   PostgreSQL      Kafka Producer             AI Module
-(Source of Truth)       │                 (RAG, Prompt Builder,
-                        │                  Tool Calling)
-                        ▼                           │
-                    Kafka Cluster                   │
-                  ┌───────────────┐                 │
-                  │               │                 │
-                  ▼               ▼                 │
-          Event Worker   Embedding Worker           │
-                                  │                 │
-                                  ▼                 │
-                               Milvus ◄─────────────┘
-                                  │
-                                  ▼
-                       Semantic Search (Top-K)
-                                  │
-                                  ▼
-                     Gemini / OpenAI / Ollama
+                        Internet
+                            │
+          ┌─────────────────┴─────────────────┐
+          │                                   │
+      gRPCUI                             Vue Frontend
+          │                                   │
+          └─────────────────┬─────────────────┘
+                            │
+                       gRPC Server
+                            │
+                    Chat Service
+                            │
+          ┌─────────────────┴──────────────────┐
+          │                                    │
+          ▼                                    ▼
+     PostgreSQL                        Kafka Producer
+          │                                    │
+          │                             chat.completed
+          │                                    │
+          └────────────────────────────────────┘
+                           │
+                  Kafka Cluster
+        ┌──────────────────┼──────────────────┐
+        │                  │                  │
+        ▼                  ▼                  ▼
+
+Knowledge Worker Memory Worker Event Worker
+│ │ │
+▼ ▼ ▼
+Milvus Visitor Memory Analytics

@@ -5,8 +5,8 @@ import (
 	"context"
 	"time"
 
-	"portfolio-ai/internal/auth/jwt"
-	pb "portfolio-ai/proto/auth"
+	"dan-ai/internal/auth/jwt"
+	pb "dan-ai/proto/auth"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

@@ -2,8 +2,8 @@
 package bootstrap
 
 import (
-	"portfolio-ai/internal/auth/jwt"
-	pkggrpc "portfolio-ai/pkg/grpc"
+	"dan-ai/internal/auth/jwt"
+	pkggrpc "dan-ai/pkg/grpc"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"

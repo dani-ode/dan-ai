@@ -144,7 +144,7 @@ const file_aimodel_aimodel_proto_rawDesc = "" +
 	"\x0econtext_window\x18\x06 \x01(\x05R\rcontextWindow\x12%\n" +
 	"\x0esupports_tools\x18\a \x01(\bR\rsupportsTools\x12'\n" +
 	"\x0fsupports_stream\x18\b \x01(\bR\x0esupportsStream\x12\x18\n" +
-	"\aenabled\x18\t \x01(\bR\aenabledB\x1cZ\x1aportfolio-ai/proto/aimodelb\x06proto3"
+	"\aenabled\x18\t \x01(\bR\aenabledB\x16Z\x14dan-ai/proto/aimodelb\x06proto3"
 
 var (
 	file_aimodel_aimodel_proto_rawDescOnce sync.Once

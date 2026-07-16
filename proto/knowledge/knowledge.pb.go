@@ -546,7 +546,7 @@ const file_knowledge_knowledge_proto_rawDesc = "" +
 	"\vGetDocument\x12*.portfolio.knowledge.v1.GetDocumentRequest\x1a).portfolio.knowledge.v1.KnowledgeDocument\x12l\n" +
 	"\rListDocuments\x12,.portfolio.knowledge.v1.ListDocumentsRequest\x1a-.portfolio.knowledge.v1.ListDocumentsResponse\x12c\n" +
 	"\n" +
-	"ListChunks\x12).portfolio.knowledge.v1.ListChunksRequest\x1a*.portfolio.knowledge.v1.ListChunksResponseB\x1eZ\x1cportfolio-ai/proto/knowledgeb\x06proto3"
+	"ListChunks\x12).portfolio.knowledge.v1.ListChunksRequest\x1a*.portfolio.knowledge.v1.ListChunksResponseB\x18Z\x16dan-ai/proto/knowledgeb\x06proto3"
 
 var (
 	file_knowledge_knowledge_proto_rawDescOnce sync.Once

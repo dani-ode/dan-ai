@@ -166,7 +166,7 @@ const file_certificate_certificate_proto_rawDesc = "" +
 	" \x01(\tR\n" +
 	"issuerLogo\x129\n" +
 	"\n" +
-	"created_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB Z\x1eportfolio-ai/proto/certificateb\x06proto3"
+	"created_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\x1aZ\x18dan-ai/proto/certificateb\x06proto3"
 
 var (
 	file_certificate_certificate_proto_rawDescOnce sync.Once

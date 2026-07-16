@@ -2,8 +2,8 @@
 package mapper
 
 import (
-	"portfolio-ai/internal/chat/entity"
-	pb "portfolio-ai/proto/chat"
+	"dan-ai/internal/chat/entity"
+	pb "dan-ai/proto/chat"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

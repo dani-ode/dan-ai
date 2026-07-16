@@ -211,7 +211,7 @@ const file_profile_profile_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x1cZ\x1aportfolio-ai/proto/profileb\x06proto3"
+	"updated_at\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x16Z\x14dan-ai/proto/profileb\x06proto3"
 
 var (
 	file_profile_profile_proto_rawDescOnce sync.Once

@@ -214,7 +214,7 @@ const file_visitor_visitor_service_proto_rawDesc = "" +
 	"\x0eVisitorService\x12T\n" +
 	"\x0fRegisterVisitor\x12\x1f.visitor.RegisterVisitorRequest\x1a .visitor.RegisterVisitorResponse\x12E\n" +
 	"\n" +
-	"GetVisitor\x12\x1a.visitor.GetVisitorRequest\x1a\x1b.visitor.GetVisitorResponseB\x1cZ\x1aportfolio-ai/proto/visitorb\x06proto3"
+	"GetVisitor\x12\x1a.visitor.GetVisitorRequest\x1a\x1b.visitor.GetVisitorResponseB\x16Z\x14dan-ai/proto/visitorb\x06proto3"
 
 var (
 	file_visitor_visitor_service_proto_rawDescOnce sync.Once

@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"portfolio-ai/internal/ai/client"
-	"portfolio-ai/internal/ai/schema"
+	"dan-ai/internal/ai/client"
+	"dan-ai/internal/ai/schema"
 
 	"github.com/google/generative-ai-go/genai"
 )

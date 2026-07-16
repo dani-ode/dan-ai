@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"portfolio-ai/internal/chat/entity"
-	visitorentity "portfolio-ai/internal/visitor/entity"
-	visitorsvc "portfolio-ai/internal/visitor/service"
-	pb "portfolio-ai/proto/chat"
+	"dan-ai/internal/chat/entity"
+	visitorentity "dan-ai/internal/visitor/entity"
+	visitorsvc "dan-ai/internal/visitor/service"
+	pb "dan-ai/proto/chat"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

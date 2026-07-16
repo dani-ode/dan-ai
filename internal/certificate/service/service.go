@@ -5,11 +5,11 @@ import (
 	"context"
 	"log"
 
-	"portfolio-ai/internal/certificate/entity"
-	"portfolio-ai/internal/certificate/repository"
-	knowledgeBuilder "portfolio-ai/internal/knowledge/builder"
-	knowledgeService "portfolio-ai/internal/knowledge/service"
-	"portfolio-ai/pkg/ulid"
+	"dan-ai/internal/certificate/entity"
+	"dan-ai/internal/certificate/repository"
+	knowledgeBuilder "dan-ai/internal/knowledge/builder"
+	knowledgeService "dan-ai/internal/knowledge/service"
+	"dan-ai/pkg/ulid"
 )
 
 // Service defines the interface for Certificate business operations.

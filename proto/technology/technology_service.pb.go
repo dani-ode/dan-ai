@@ -615,7 +615,7 @@ const file_technology_technology_service_proto_rawDesc = "" +
 	"\rGetTechnology\x12 .technology.GetTechnologyRequest\x1a!.technology.GetTechnologyResponse\x12]\n" +
 	"\x10CreateTechnology\x12#.technology.CreateTechnologyRequest\x1a$.technology.CreateTechnologyResponse\x12]\n" +
 	"\x10UpdateTechnology\x12#.technology.UpdateTechnologyRequest\x1a$.technology.UpdateTechnologyResponse\x12]\n" +
-	"\x10DeleteTechnology\x12#.technology.DeleteTechnologyRequest\x1a$.technology.DeleteTechnologyResponseB\x1fZ\x1dportfolio-ai/proto/technologyb\x06proto3"
+	"\x10DeleteTechnology\x12#.technology.DeleteTechnologyRequest\x1a$.technology.DeleteTechnologyResponseB\x19Z\x17dan-ai/proto/technologyb\x06proto3"
 
 var (
 	file_technology_technology_service_proto_rawDescOnce sync.Once

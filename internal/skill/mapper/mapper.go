@@ -2,9 +2,9 @@
 package mapper
 
 import (
-	"portfolio-ai/internal/skill/entity"
-	techMapper "portfolio-ai/internal/technology/mapper"
-	pb "portfolio-ai/proto/skill"
+	"dan-ai/internal/skill/entity"
+	techMapper "dan-ai/internal/technology/mapper"
+	pb "dan-ai/proto/skill"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

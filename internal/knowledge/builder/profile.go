@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"portfolio-ai/internal/profile/entity"
+	"dan-ai/internal/profile/entity"
 )
 
 func BuildProfileDocument(prof entity.Profile) (title string, content string) {

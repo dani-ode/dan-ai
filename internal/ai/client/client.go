@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
-	"portfolio-ai/pkg/config"
+	"dan-ai/pkg/config"
 
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"

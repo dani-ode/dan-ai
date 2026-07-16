@@ -1,4 +1,4 @@
-module portfolio-ai
+module dan-ai
 
 go 1.25.0
 

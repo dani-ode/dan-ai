@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package technology;
 
-option go_package = "portfolio-ai/proto/technology";
+option go_package = "dan-ai/proto/technology";
 
 import "technology/technology.proto";
 

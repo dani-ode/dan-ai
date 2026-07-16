@@ -732,7 +732,7 @@ const file_experience_experience_service_proto_rawDesc = "" +
 	"\rGetExperience\x12 .experience.GetExperienceRequest\x1a!.experience.GetExperienceResponse\x12]\n" +
 	"\x10CreateExperience\x12#.experience.CreateExperienceRequest\x1a$.experience.CreateExperienceResponse\x12]\n" +
 	"\x10UpdateExperience\x12#.experience.UpdateExperienceRequest\x1a$.experience.UpdateExperienceResponse\x12]\n" +
-	"\x10DeleteExperience\x12#.experience.DeleteExperienceRequest\x1a$.experience.DeleteExperienceResponseB\x1fZ\x1dportfolio-ai/proto/experienceb\x06proto3"
+	"\x10DeleteExperience\x12#.experience.DeleteExperienceRequest\x1a$.experience.DeleteExperienceResponseB\x19Z\x17dan-ai/proto/experienceb\x06proto3"
 
 var (
 	file_experience_experience_service_proto_rawDescOnce sync.Once

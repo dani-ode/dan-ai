@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package certificate;
 
-option go_package = "portfolio-ai/proto/certificate";
+option go_package = "dan-ai/proto/certificate";
 
 import "google/protobuf/timestamp.proto";
 

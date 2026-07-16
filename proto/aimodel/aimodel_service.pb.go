@@ -629,7 +629,7 @@ const file_aimodel_aimodel_service_proto_rawDesc = "" +
 	"GetAIModel\x12\x1a.aimodel.GetAIModelRequest\x1a\x1b.aimodel.GetAIModelResponse\x12K\n" +
 	"\fListAIModels\x12\x1c.aimodel.ListAIModelsRequest\x1a\x1d.aimodel.ListAIModelsResponse\x12N\n" +
 	"\rUpdateAIModel\x12\x1d.aimodel.UpdateAIModelRequest\x1a\x1e.aimodel.UpdateAIModelResponse\x12N\n" +
-	"\rDeleteAIModel\x12\x1d.aimodel.DeleteAIModelRequest\x1a\x1e.aimodel.DeleteAIModelResponseB\x1cZ\x1aportfolio-ai/proto/aimodelb\x06proto3"
+	"\rDeleteAIModel\x12\x1d.aimodel.DeleteAIModelRequest\x1a\x1e.aimodel.DeleteAIModelResponseB\x16Z\x14dan-ai/proto/aimodelb\x06proto3"
 
 var (
 	file_aimodel_aimodel_service_proto_rawDescOnce sync.Once

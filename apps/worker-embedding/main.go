@@ -1,7 +1,7 @@
 package main
 
 import (
-	"portfolio-ai/apps/worker-embedding/bootstrap"
+	"dan-ai/apps/worker-embedding/bootstrap"
 )
 
 func main() {

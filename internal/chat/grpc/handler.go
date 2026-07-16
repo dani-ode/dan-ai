@@ -4,10 +4,10 @@ package grpc
 import (
 	"context"
 	"errors"
-	"portfolio-ai/internal/chat/mapper"
-	"portfolio-ai/internal/chat/service"
-	visitorsvc "portfolio-ai/internal/visitor/service"
-	pb "portfolio-ai/proto/chat"
+	"dan-ai/internal/chat/mapper"
+	"dan-ai/internal/chat/service"
+	visitorsvc "dan-ai/internal/visitor/service"
+	pb "dan-ai/proto/chat"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

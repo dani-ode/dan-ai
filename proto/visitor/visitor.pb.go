@@ -120,7 +120,7 @@ const file_visitor_visitor_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x1cZ\x1aportfolio-ai/proto/visitorb\x06proto3"
+	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x16Z\x14dan-ai/proto/visitorb\x06proto3"
 
 var (
 	file_visitor_visitor_proto_rawDescOnce sync.Once

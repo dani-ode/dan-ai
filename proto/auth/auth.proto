@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package auth;
 
-option go_package = "portfolio-ai/proto/auth";
+option go_package = "dan-ai/proto/auth";
 
 service AuthService {
   rpc Login(LoginRequest) returns (LoginResponse);

@@ -4,9 +4,9 @@ package grpc
 import (
 	"context"
 	"errors"
-	"portfolio-ai/internal/experience/mapper"
-	"portfolio-ai/internal/experience/service"
-	pb "portfolio-ai/proto/experience"
+	"dan-ai/internal/experience/mapper"
+	"dan-ai/internal/experience/service"
+	pb "dan-ai/proto/experience"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

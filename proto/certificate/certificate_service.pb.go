@@ -668,7 +668,7 @@ const file_certificate_certificate_service_proto_rawDesc = "" +
 	"\x0eGetCertificate\x12\".certificate.GetCertificateRequest\x1a#.certificate.GetCertificateResponse\x12b\n" +
 	"\x11CreateCertificate\x12%.certificate.CreateCertificateRequest\x1a&.certificate.CreateCertificateResponse\x12b\n" +
 	"\x11UpdateCertificate\x12%.certificate.UpdateCertificateRequest\x1a&.certificate.UpdateCertificateResponse\x12b\n" +
-	"\x11DeleteCertificate\x12%.certificate.DeleteCertificateRequest\x1a&.certificate.DeleteCertificateResponseB Z\x1eportfolio-ai/proto/certificateb\x06proto3"
+	"\x11DeleteCertificate\x12%.certificate.DeleteCertificateRequest\x1a&.certificate.DeleteCertificateResponseB\x1aZ\x18dan-ai/proto/certificateb\x06proto3"
 
 var (
 	file_certificate_certificate_service_proto_rawDescOnce sync.Once

@@ -136,7 +136,7 @@ const file_prompt_prompt_proto_rawDesc = "" +
 	"\x06active\x18\x06 \x01(\bR\x06active\x12\x18\n" +
 	"\aversion\x18\a \x01(\x05R\aversion\x129\n" +
 	"\n" +
-	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\x1bZ\x19portfolio-ai/proto/promptb\x06proto3"
+	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\x15Z\x13dan-ai/proto/promptb\x06proto3"
 
 var (
 	file_prompt_prompt_proto_rawDescOnce sync.Once

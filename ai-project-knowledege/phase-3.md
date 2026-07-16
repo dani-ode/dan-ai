@@ -35,7 +35,7 @@ ID
 01ABC
 
 Title
-Portfolio AI
+Dan AI
 
 Summary
 AI Portfolio
@@ -59,10 +59,10 @@ source_id
 01ABC
 
 title
-Portfolio AI
+Dan AI
 
 content
-Portfolio AI adalah backend...
+Dan AI adalah backend...
 
 Yang mengisi content bukan AI.
 
@@ -75,7 +75,7 @@ func BuildProjectDocument(project Project) string
 menghasilkan
 
 Project:
-Portfolio AI
+Dan AI
 
 Summary:
 Backend AI Portfolio.
@@ -85,7 +85,7 @@ Kafka
 Milvus
 
 Description:
-Portfolio AI merupakan backend...
+Dan AI merupakan backend...
 
 Kalimatnya dibuat deterministic.
 
@@ -162,7 +162,7 @@ Misalnya
 
 Chunk 1
 
-Portfolio AI adalah...
+Dan AI adalah...
 
 --------------------
 

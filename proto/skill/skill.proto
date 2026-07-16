@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package skill;
 
-option go_package = "portfolio-ai/proto/skill";
+option go_package = "dan-ai/proto/skill";
 
 import "google/protobuf/timestamp.proto";
 import "technology/technology.proto";

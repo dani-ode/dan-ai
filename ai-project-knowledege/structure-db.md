@@ -1,4 +1,5 @@
-1. profiles
+# 1. profiles
+
 id #ULID
 full_name
 headline
@@ -16,7 +17,8 @@ timezone
 created_at
 updated_at
 
-2. experiences
+# 2. experiences
+
 id #ULID
 company
 position
@@ -33,7 +35,8 @@ remote_type #Remote, Hybrid, Onsite
 created_at
 updated_at
 
-3. projects
+# 3. projects
+
 id #ULID
 slug
 title
@@ -51,7 +54,8 @@ read_time
 created_at
 updated_at
 
-4. technologies
+# 4. technologies
+
 id #ULID
 name
 category
@@ -61,12 +65,14 @@ official_url
 logo
 created_at
 
-5. project_technologies #Many-to-many.
+# 5. project_technologies #Many-to-many.
+
 project_id
 technology_id
 display_order
 
-6. certificates
+# 6. certificates
+
 id #ULID
 title
 issuer
@@ -79,7 +85,8 @@ skills #JSON
 issuer_logo
 created_at
 
-7. skills
+# 7. skills
+
 id #ULID
 technology_id
 display_order
@@ -88,8 +95,8 @@ years
 favorite
 created_at
 
+# 8. knowledge_documents #Ini inti AI
 
-8. knowledge_documents #Ini inti AI
 id #ULID
 source_type #profile, experience, project, certificate, blog, manual
 source_id
@@ -103,7 +110,8 @@ last_embedded_at
 created_at
 updated_at
 
-9. knowledge_chunks
+# 9. knowledge_chunks
+
 id #ULID
 document_id
 chunk_index
@@ -112,7 +120,8 @@ token_count
 embedding_model
 created_at
 
-10. visitors
+# 10. visitors
+
 id #ULID
 first_seen_at
 last_seen_at
@@ -120,15 +129,20 @@ total_messages
 created_at
 updated_at
 
-11. visitor_memories
+# 11. visitor_memories
+
 id #ULID
 visitor_id
+category
 key
 value
+confidence
+last_confirmed_at
 created_at
 updated_at
 
-12. chat_sessions
+# 12. chat_sessions
+
 id #ULID
 visitor_id
 prompt_id
@@ -138,7 +152,8 @@ ended_at
 created_at
 updated_at
 
-13. chat_messages
+# 13. chat_messages
+
 id #ULID
 session_id
 role #system, user, assistant, tool
@@ -151,7 +166,8 @@ status #Pending, Streaming, Completed, Error
 created_at
 updated_at
 
-14. prompts
+# 14. prompts
+
 id #ULID
 name
 system_prompt
@@ -161,7 +177,8 @@ active
 version
 created_at
 
-15. ai_models
+# 15. ai_models
+
 id #ULID
 name
 provider
@@ -172,7 +189,8 @@ supports_tools
 supports_stream
 enabled
 
-16. ai_tools #Kalau nanti Agent punya tool.
+# 16. ai_tools #Kalau nanti Agent punya tool.
+
 id #ULID
 name
 tool_type
@@ -180,7 +198,8 @@ config #JSON
 description
 enabled
 
-17. outbox_events #Kafka Event.
+# 17. outbox_events #Kafka Event.
+
 id #ULID
 aggregate
 aggregate_id

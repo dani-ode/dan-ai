@@ -48,14 +48,14 @@ func Load() (*Config, error) {
 	_ = godotenv.Load()
 
 	cfg := &Config{}
-	cfg.App.Name = getEnv("APP_NAME", "Portfolio AI")
+	cfg.App.Name = getEnv("APP_NAME", "Dan AI")
 	cfg.App.Env = getEnv("APP_ENV", "development")
 	cfg.App.Port = getEnv("APP_PORT", "8080")
 
 	cfg.DB.Host = getEnv("DB_HOST", "localhost")
 	cfg.DB.User = getEnv("DB_USER", "postgres")
 	cfg.DB.Password = getEnv("DB_PASSWORD", "postgres")
-	cfg.DB.Name = getEnv("DB_NAME", "portfolio_ai")
+	cfg.DB.Name = getEnv("DB_NAME", "dan_ai")
 	cfg.DB.URL = getEnv("DATABASE_URL", "")
 
 	dbPortStr := getEnv("DB_PORT", "5432")

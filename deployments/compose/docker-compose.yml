@@ -5,7 +5,7 @@ services:
     build:
       context: ../..
       dockerfile: deployments/docker/api.Dockerfile
-    container_name: portfolio-api
+    container_name: dan-ai-api
     restart: unless-stopped
     env_file:
       - ../../.env
@@ -19,7 +19,7 @@ services:
     build:
       context: ../..
       dockerfile: deployments/docker/worker-events.Dockerfile
-    container_name: portfolio-worker-events
+    container_name: dan-ai-worker-events
     restart: unless-stopped
     env_file:
       - ../../.env
@@ -31,7 +31,7 @@ services:
     build:
       context: ../..
       dockerfile: deployments/docker/worker-embedding.Dockerfile
-    container_name: portfolio-worker-embedding
+    container_name: dan-ai-worker-embedding
     restart: unless-stopped
     env_file:
       - ../../.env
@@ -39,10 +39,21 @@ services:
       postgres:
         condition: service_healthy
 
+  worker-memory:
+    build:
+      context: ../..
+      dockerfile: deployments/docker/worker-memory.Dockerfile
+    container_name: dan-ai-worker-memory
+    restart: unless-stopped
+    env_file:
+      - ../../.env
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   kafka:
     image: apache/kafka:3.7.0
-    container_name: portfolio-kafka
+    container_name: dan-ai-kafka
     restart: unless-stopped
     ports:
       - "9092:9092"
@@ -59,7 +70,7 @@ services:
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
 
   etcd:
-    container_name: portfolio-milvus-etcd
+    container_name: dan-ai-milvus-etcd
     image: quay.io/coreos/etcd:v3.5.5
     environment:
       - ETCD_AUTO_COMPACTION_MODE=revision
@@ -71,7 +82,7 @@ services:
     command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
 
   minio:
-    container_name: portfolio-milvus-minio
+    container_name: dan-ai-milvus-minio
     image: minio/minio:RELEASE.2023-03-20T20-16-18Z
     environment:
       MINIO_ACCESS_KEY: minioadmin
@@ -86,7 +97,7 @@ services:
       retries: 3
 
   milvus-standalone:
-    container_name: portfolio-milvus
+    container_name: dan-ai-milvus
     image: milvusdb/milvus:v2.4.5
     command: ["milvus", "run", "standalone"]
     environment:
@@ -103,7 +114,7 @@ services:
 
   postgres:
     image: postgres:17
-    container_name: portfolio-postgres
+    container_name: dan-ai-postgres
     restart: unless-stopped
 
     environment:

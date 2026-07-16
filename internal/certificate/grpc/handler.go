@@ -4,9 +4,9 @@ package grpc
 import (
 	"context"
 	"errors"
-	"portfolio-ai/internal/certificate/mapper"
-	"portfolio-ai/internal/certificate/service"
-	pb "portfolio-ai/proto/certificate"
+	"dan-ai/internal/certificate/mapper"
+	"dan-ai/internal/certificate/service"
+	pb "dan-ai/proto/certificate"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

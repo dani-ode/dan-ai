@@ -149,8 +149,11 @@ CREATE TABLE visitors (
 CREATE TABLE visitor_memories (
     id CHAR(26) PRIMARY KEY,
     visitor_id CHAR(26) NOT NULL REFERENCES visitors(id) ON DELETE CASCADE,
+    category TEXT,
     key TEXT NOT NULL,
     value TEXT NOT NULL,
+    confidence NUMERIC(5, 4),
+    last_confirmed_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (visitor_id, key)

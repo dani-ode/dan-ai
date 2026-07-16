@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"time"
 
-	"portfolio-ai/internal/knowledge/entity"
-	"portfolio-ai/internal/knowledge/repository"
-	outboxEntity "portfolio-ai/internal/outbox/entity"
+	"dan-ai/internal/knowledge/entity"
+	"dan-ai/internal/knowledge/repository"
+	outboxEntity "dan-ai/internal/outbox/entity"
 
 	"github.com/oklog/ulid/v2"
 )

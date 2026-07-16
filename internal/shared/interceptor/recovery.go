@@ -5,7 +5,7 @@ import (
 	"context"
 	"runtime/debug"
 
-	"portfolio-ai/pkg/logger"
+	"dan-ai/pkg/logger"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

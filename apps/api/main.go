@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"portfolio-ai/apps/api/bootstrap"
+	"dan-ai/apps/api/bootstrap"
 )
 
 func main() {

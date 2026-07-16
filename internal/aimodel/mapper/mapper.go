@@ -2,8 +2,8 @@
 package mapper
 
 import (
-	"portfolio-ai/internal/aimodel/entity"
-	pb "portfolio-ai/proto/aimodel"
+	"dan-ai/internal/aimodel/entity"
+	pb "dan-ai/proto/aimodel"
 )
 
 // ToProto maps a domain AIModel entity to a protobuf AIModel message.

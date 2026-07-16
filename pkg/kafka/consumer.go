@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"time"
-	"portfolio-ai/pkg/config"
+	"dan-ai/pkg/config"
 
 	"github.com/segmentio/kafka-go"
 )

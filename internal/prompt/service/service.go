@@ -3,9 +3,9 @@ package service
 
 import (
 	"context"
-	"portfolio-ai/internal/prompt/entity"
-	"portfolio-ai/internal/prompt/repository"
-	"portfolio-ai/pkg/ulid"
+	"dan-ai/internal/prompt/entity"
+	"dan-ai/internal/prompt/repository"
+	"dan-ai/pkg/ulid"
 )
 
 // Service defines the interface for Prompt business operations.

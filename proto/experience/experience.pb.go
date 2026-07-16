@@ -206,7 +206,7 @@ const file_experience_experience_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x1fZ\x1dportfolio-ai/proto/experienceb\x06proto3"
+	"updated_at\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x19Z\x17dan-ai/proto/experienceb\x06proto3"
 
 var (
 	file_experience_experience_proto_rawDescOnce sync.Once

@@ -5,8 +5,8 @@ import (
 	"context"
 	"strings"
 
-	"portfolio-ai/internal/auth/jwt"
-	"portfolio-ai/pkg/logger"
+	"dan-ai/internal/auth/jwt"
+	"dan-ai/pkg/logger"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

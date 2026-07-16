@@ -1,6 +1,6 @@
-# portfolio-ai
+# dan-ai
 
-Portfolio AI backend built with Go and Gin. The project includes a main API service, background workers for embeddings and events, and supporting infrastructure such as PostgreSQL, Kafka, and Milvus.
+Dan AI backend built with Go and Gin. The project includes a main API service, background workers for embeddings and events, and supporting infrastructure such as PostgreSQL, Kafka, and Milvus.
 
 ## Project layout
 
@@ -42,7 +42,7 @@ docker compose --env-file .env -f deployments/compose/docker-compose.yml up --bu
 
 ```bash
 docker compose --env-file .env -f deployments/compose/docker-compose.yml down -v
-docker compose --env-file .env -f deployments/compose/docker-compose.yml --profile tools run --rm migrate -path=/migrations -database="postgres://postgres:postgres@postgres:5432/portfolio_ai?sslmode=disable" up
+docker compose --env-file .env -f deployments/compose/docker-compose.yml --profile tools run --rm migrate -path=/migrations -database="postgres://postgres:postgres@postgres:5432/dan_ai?sslmode=disable" up
 ```
 
 ## Verify services
@@ -53,7 +53,7 @@ docker compose --env-file .env -f deployments/compose/docker-compose.yml ps
 
 You should see the main services running normally, including:
 
-- `portfolio-api` on port `8080`
-- `portfolio-postgres` on port `5432`
-- `portfolio-kafka` on ports `9092/9093`
-- `portfolio-milvus` on port `19530`
+- `dan-ai-api` on port `8080`
+- `dan-ai-postgres` on port `5432`
+- `dan-ai-kafka` on ports `9092/9093`
+- `dan-ai-milvus` on port `19530`

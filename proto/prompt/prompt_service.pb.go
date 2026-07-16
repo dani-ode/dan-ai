@@ -573,7 +573,7 @@ const file_prompt_prompt_service_proto_rawDesc = "" +
 	"\tGetPrompt\x12\x18.prompt.GetPromptRequest\x1a\x19.prompt.GetPromptResponse\x12F\n" +
 	"\vListPrompts\x12\x1a.prompt.ListPromptsRequest\x1a\x1b.prompt.ListPromptsResponse\x12I\n" +
 	"\fUpdatePrompt\x12\x1b.prompt.UpdatePromptRequest\x1a\x1c.prompt.UpdatePromptResponse\x12I\n" +
-	"\fDeletePrompt\x12\x1b.prompt.DeletePromptRequest\x1a\x1c.prompt.DeletePromptResponseB\x1bZ\x19portfolio-ai/proto/promptb\x06proto3"
+	"\fDeletePrompt\x12\x1b.prompt.DeletePromptRequest\x1a\x1c.prompt.DeletePromptResponseB\x15Z\x13dan-ai/proto/promptb\x06proto3"
 
 var (
 	file_prompt_prompt_service_proto_rawDescOnce sync.Once

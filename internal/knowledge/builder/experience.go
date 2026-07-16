@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"portfolio-ai/internal/experience/entity"
+	"dan-ai/internal/experience/entity"
 )
 
 func BuildExperienceDocument(exp entity.Experience) (title string, content string) {

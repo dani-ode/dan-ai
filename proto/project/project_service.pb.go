@@ -719,7 +719,7 @@ const file_project_project_service_proto_rawDesc = "" +
 	"GetProject\x12\x1a.project.GetProjectRequest\x1a\x1b.project.GetProjectResponse\x12N\n" +
 	"\rCreateProject\x12\x1d.project.CreateProjectRequest\x1a\x1e.project.CreateProjectResponse\x12N\n" +
 	"\rUpdateProject\x12\x1d.project.UpdateProjectRequest\x1a\x1e.project.UpdateProjectResponse\x12N\n" +
-	"\rDeleteProject\x12\x1d.project.DeleteProjectRequest\x1a\x1e.project.DeleteProjectResponseB\x1cZ\x1aportfolio-ai/proto/projectb\x06proto3"
+	"\rDeleteProject\x12\x1d.project.DeleteProjectRequest\x1a\x1e.project.DeleteProjectResponseB\x16Z\x14dan-ai/proto/projectb\x06proto3"
 
 var (
 	file_project_project_service_proto_rawDescOnce sync.Once

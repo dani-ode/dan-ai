@@ -1,4 +1,4 @@
-portfolio-ai/
+dan-ai/
 │
 ├── .dockerignore
 ├── .env
@@ -7,270 +7,195 @@ portfolio-ai/
 ├── Makefile
 ├── README.md
 ├── apps/
-│   ├── api/
-│   │   ├── bootstrap/
-│   │   │   ├── app.go
-│   │   │   ├── database.go
-│   │   │   └── grpc.go
-│   │   └── main.go
-│   ├── worker-embedding/
-│   │   ├── bootstrap/
-│   │   │   └── worker.go
-│   │   └── main.go
-│   └── worker-events/
-│       ├── bootstrap/
-│       │   └── worker.go
-│       └── main.go
+│ ├── api/
+│ │ ├── bootstrap/
+│ │ │ ├── app.go
+│ │ │ ├── database.go
+│ │ │ └── grpc.go
+│ │ └── main.go
+│ ├── worker-embedding/
+│ │ ├── bootstrap/
+│ │ │ └── worker.go
+│ │ └── main.go
+│ ├── worker-events/
+│ │ ├── bootstrap/
+│ │ │ └── worker.go
+│ │ └── main.go
+│ └── worker-memory/
+│ ├── bootstrap/
+│ │ └── worker.go
+│ └── main.go
 ├── buf.gen.yaml
 ├── buf.yaml
 ├── deployments/
-│   ├── compose/
-│   │   ├── docker-compose.dev.yml
-│   │   ├── docker-compose.prod.yml
-│   │   └── docker-compose.yml
-│   ├── docker/
-│   │   ├── api.Dockerfile
-│   │   ├── worker-embedding.Dockerfile
-│   │   └── worker-events.Dockerfile
-│   └── migrations/
-│       ├── 000001_create_profiles.down.sql
-│       ├── 000001_create_profiles.up.sql
-│       ├── 000002_create_remaining_tables.down.sql
-│       └── 000002_create_remaining_tables.up.sql
+│ ├── compose/
+│ │ ├── docker-compose.dev.yml
+│ │ ├── docker-compose.prod.yml
+│ │ └── docker-compose.yml
+│ ├── docker/
+│ │ ├── api.Dockerfile
+│ │ ├── worker-embedding.Dockerfile
+│ │ ├── worker-events.Dockerfile
+│ │ └── worker-memory.Dockerfile
+│ └── migrations/
+│ ├── 000001_create_profiles.down.sql
+│ ├── 000001_create_profiles.up.sql
+│ ├── 000002_create_remaining_tables.down.sql
+│ └── 000002_create_remaining_tables.up.sql
 ├── docs/
-│   └── README.md
+│ └── README.md
 ├── go.mod
 ├── go.sum
 ├── internal/
-│   ├── aimodel/
-│   │   ├── entity/
-│   │   │   └── aimodel.go
-│   │   ├── grpc/
-│   │   │   └── handler.go
-│   │   ├── mapper/
-│   │   │   └── mapper.go
-│   │   ├── repository/
-│   │   │   └── postgres.go
-│   │   └── service/
-│   │       └── service.go
-│   ├── auth/
-│   │   ├── grpc/
-│   │   │   └── handler.go
-│   │   └── jwt/
-│   │       └── jwt.go
-│   ├── certificate/
-│   │   ├── entity/
-│   │   │   └── certificate.go
-│   │   ├── grpc/
-│   │   │   └── handler.go
-│   │   ├── mapper/
-│   │   │   └── mapper.go
-│   │   ├── repository/
-│   │   │   └── postgres.go
-│   │   └── service/
-│   │       └── service.go
-│   ├── chat/
-│   │   ├── entity/
-│   │   │   ├── message.go
-│   │   │   └── session.go
-│   │   ├── grpc/
-│   │   │   └── handler.go
-│   │   ├── mapper/
-│   │   │   └── mapper.go
-│   │   ├── repository/
-│   │   │   └── postgres.go
-│   │   └── service/
-│   │       └── service.go
-│   ├── experience/
-│   │   ├── entity/
-│   │   │   └── experience.go
-│   │   ├── grpc/
-│   │   │   └── handler.go
-│   │   ├── mapper/
-│   │   │   └── mapper.go
-│   │   ├── repository/
-│   │   │   └── postgres.go
-│   │   └── service/
-│   │       └── service.go
-│   ├── knowledge/
-│   │   ├── builder/
-│   │   │   ├── certificate.go
-│   │   │   ├── experience.go
-│   │   │   ├── profile.go
-│   │   │   ├── project.go
-│   │   │   └── skill.go
-│   │   ├── chunker/
-│   │   │   └── chunker.go
-│   │   ├── entity/
-│   │   │   ├── chunk.go
-│   │   │   └── document.go
-│   │   ├── grpc/
-│   │   │   └── handler.go
-│   │   ├── mapper/
-│   │   │   └── mapper.go
-│   │   ├── repository/
-│   │   │   └── postgres.go
-│   │   └── service/
-│   │       └── service.go
-│   ├── profile/
-│   │   ├── entity/
-│   │   │   └── profile.go
-│   │   ├── grpc/
-│   │   │   └── handler.go
-│   │   ├── mapper/
-│   │   │   └── mapper.go
-│   │   ├── repository/
-│   │   │   └── postgres.go
-│   │   └── service/
-│   │       └── service.go
-│   ├── project/
-│   │   ├── entity/
-│   │   │   └── project.go
-│   │   ├── grpc/
-│   │   │   └── handler.go
-│   │   ├── mapper/
-│   │   │   └── mapper.go
-│   │   ├── repository/
-│   │   │   └── postgres.go
-│   │   └── service/
-│   │       └── service.go
-│   ├── prompt/
-│   │   ├── entity/
-│   │   │   └── prompt.go
-│   │   ├── grpc/
-│   │   │   └── handler.go
-│   │   ├── mapper/
-│   │   │   └── mapper.go
-│   │   ├── repository/
-│   │   │   └── postgres.go
-│   │   └── service/
-│   │       └── service.go
-│   ├── shared/
-│   │   ├── constants/
-│   │   │   └── constants.go
-│   │   ├── errors/
-│   │   │   └── errors.go
-│   │   ├── interceptor/
-│   │   │   ├── auth.go
-│   │   │   ├── logger.go
-│   │   │   └── recovery.go
-│   │   ├── middleware/
-│   │   └── response/
-│   │       └── response.go
-│   ├── skill/
-│   │   ├── entity/
-│   │   │   └── skill.go
-│   │   ├── grpc/
-│   │   │   └── handler.go
-│   │   ├── mapper/
-│   │   │   └── mapper.go
-│   │   ├── repository/
-│   │   │   └── postgres.go
-│   │   └── service/
-│   │       └── service.go
-│   ├── technology/
-│   │   ├── entity/
-│   │   │   └── technology.go
-│   │   ├── grpc/
-│   │   │   └── handler.go
-│   │   ├── mapper/
-│   │   │   └── mapper.go
-│   │   ├── repository/
-│   │   │   └── postgres.go
-│   │   └── service/
-│   │       └── service.go
-│   └── visitor/
-│       ├── entity/
-│       │   └── visitor.go
-│       ├── grpc/
-│       │   └── handler.go
-│       ├── mapper/
-│       │   └── mapper.go
-│       ├── repository/
-│       │   └── postgres.go
-│       └── service/
-│           └── service.go
+│ ├── ai/
+│ │ ├── client/
+│ │ │ └── client.go
+│ │ ├── memory/
+│ │ ├── provider/
+│ │ │ └── gemini.go
+│ │ ├── rag/
+│ │ ├── repository/
+│ │ ├── schema/
+│ │ │ └── knowledge_builder.go
+│ │ └── service/
+│ ├── aimodel/
+│ │ ├── entity/
+│ │ │ └── aimodel.go
+│ │ ├── grpc/
+│ │ │ └── handler.go
+│ │ ├── mapper/
+│ │ │ └── mapper.go
+│ │ ├── repository/
+│ │ │ └── postgres.go
+│ │ └── service/
+│ ├── auth/
+│ │ ├── grpc/
+│ │ │ └── handler.go
+│ │ └── jwt/
+│ │ └── jwt.go
+│ ├── certificate/
+│ │ ├── entity/
+│ │ │ └── certificate.go
+│ │ ├── grpc/
+│ │ │ └── handler.go
+│ │ ├── mapper/
+│ │ │ └── mapper.go
+│ │ ├── repository/
+│ │ │ └── postgres.go
+│ │ └── service/
+│ ├── chat/
+│ │ ├── entity/
+│ │ │ ├── message.go
+│ │ │ └── session.go
+│ │ ├── grpc/
+│ │ │ └── handler.go
+│ │ ├── mapper/
+│ │ │ └── mapper.go
+│ │ ├── repository/
+│ │ │ └── postgres.go
+│ │ └── service/
+│ │ └── service.go
+│ ├── experience/
+│ │ ├── entity/
+│ │ │ └── experience.go
+│ │ ├── grpc/
+│ │ │ └── handler.go
+│ │ ├── mapper/
+│ │ │ └── mapper.go
+│ │ ├── repository/
+│ │ │ └── postgres.go
+│ │ └── service/
+│ ├── knowledge/
+│ │ ├── builder/
+│ │ │ ├── certificate.go
+│ │ │ ├── experience.go
+│ │ │ ├── profile.go
+│ │ │ ├── project.go
+│ │ │ └── skill.go
+│ │ ├── chunk/
+│ │ │ └── ai_builder.go
+│ │ ├── chunker/
+│ │ │ └── chunker.go
+│ │ ├── entity/
+│ │ │ ├── chunk.go
+│ │ │ └── document.go
+│ │ ├── grpc/
+│ │ │ └── handler.go
+│ │ ├── mapper/
+│ │ │ └── mapper.go
+│ │ ├── processor/
+│ │ │ └── processor.go
+│ │ ├── repository/
+│ │ │ └── postgres.go
+│ │ └── service/
+│ │ └── service.go
+│ ├── memory/
+│ │ ├── entity/
+│ │ │ └── memory.go
+│ │ ├── extractor/
+│ │ │ └── extractor.go
+│ │ ├── processor/
+│ │ │ └── processor.go
+│ │ ├── repository/
+│ │ │ └── postgres.go
+│ │ └── service/
+│ │ └── service.go
+│ ├── outbox/
+│ │ ├── entity/
+│ │ │ └── outbox.go
+│ │ ├── publisher/
+│ │ │ └── publisher.go
+│ │ └── repository/
+│ │ └── postgres.go
+│ ├── profile/
+│ ├── project/
+│ ├── prompt/
+│ ├── shared/
+│ │ ├── constants/
+│ │ │ └── constants.go
+│ │ ├── errors/
+│ │ │ └── errors.go
+│ │ ├── interceptor/
+│ │ │ ├── auth.go
+│ │ │ ├── logger.go
+│ │ │ └── recovery.go
+│ │ └── response/
+│ │ └── response.go
+│ ├── skill/
+│ ├── technology/
+│ └── visitor/
 ├── pkg/
-│   ├── config/
-│   │   └── config.go
-│   ├── grpc/
-│   │   └── server.go
-│   ├── logger/
-│   │   └── logger.go
-│   ├── postgres/
-│   │   └── postgres.go
-│   ├── ulid/
-│   │   └── ulid.go
-│   └── utils/
+│ ├── config/
+│ │ └── config.go
+│ ├── grpc/
+│ │ └── server.go
+│ ├── kafka/
+│ │ ├── consumer.go
+│ │ ├── event.go
+│ │ ├── kafka.go
+│ │ └── producer.go
+│ ├── logger/
+│ │ └── logger.go
+│ ├── milvus/
+│ │ ├── client.go
+│ │ ├── collection.go
+│ │ └── vector.go
+│ ├── postgres/
+│ │ └── postgres.go
+│ └── ulid/
+│ └── ulid.go
 ├── proto/
-│   ├── README.md
-│   ├── aimodel/
-│   │   ├── aimodel.pb.go
-│   │   ├── aimodel.proto
-│   │   ├── aimodel_service.pb.go
-│   │   ├── aimodel_service.proto
-│   │   └── aimodel_service_grpc.pb.go
-│   ├── auth/
-│   │   ├── auth.pb.go
-│   │   ├── auth.proto
-│   │   └── auth_grpc.pb.go
-│   ├── certificate/
-│   │   ├── certificate.pb.go
-│   │   ├── certificate.proto
-│   │   ├── certificate_service.pb.go
-│   │   ├── certificate_service.proto
-│   │   └── certificate_service_grpc.pb.go
-│   ├── chat/
-│   │   ├── chat.pb.go
-│   │   ├── chat.proto
-│   │   ├── chat_service.pb.go
-│   │   ├── chat_service.proto
-│   │   └── chat_service_grpc.pb.go
-│   ├── experience/
-│   │   ├── experience.pb.go
-│   │   ├── experience.proto
-│   │   ├── experience_service.pb.go
-│   │   ├── experience_service.proto
-│   │   └── experience_service_grpc.pb.go
-│   ├── knowledge/
-│   │   ├── knowledge.pb.go
-│   │   ├── knowledge.proto
-│   │   └── knowledge_grpc.pb.go
-│   ├── profile/
-│   │   ├── profile.pb.go
-│   │   ├── profile.proto
-│   │   ├── profile_service.pb.go
-│   │   ├── profile_service.proto
-│   │   └── profile_service_grpc.pb.go
-│   ├── project/
-│   │   ├── project.pb.go
-│   │   ├── project.proto
-│   │   ├── project_service.pb.go
-│   │   ├── project_service.proto
-│   │   └── project_service_grpc.pb.go
-│   ├── prompt/
-│   │   ├── prompt.pb.go
-│   │   ├── prompt.proto
-│   │   ├── prompt_service.pb.go
-│   │   ├── prompt_service.proto
-│   │   └── prompt_service_grpc.pb.go
-│   ├── skill/
-│   │   ├── skill.pb.go
-│   │   ├── skill.proto
-│   │   ├── skill_service.pb.go
-│   │   ├── skill_service.proto
-│   │   └── skill_service_grpc.pb.go
-│   ├── technology/
-│   │   ├── technology.pb.go
-│   │   ├── technology.proto
-│   │   ├── technology_service.pb.go
-│   │   ├── technology_service.proto
-│   │   └── technology_service_grpc.pb.go
-│   └── visitor/
-│       ├── visitor.pb.go
-│       ├── visitor.proto
-│       ├── visitor_service.pb.go
-│       ├── visitor_service.proto
-│       └── visitor_service_grpc.pb.go
-└── scripts/
-    └── README.md
+│ ├── aimodel/
+│ ├── auth/
+│ ├── certificate/
+│ ├── chat/
+│ ├── experience/
+│ ├── knowledge/
+│ ├── profile/
+│ ├── project/
+│ ├── prompt/
+│ ├── skill/
+│ ├── technology/
+│ └── visitor/
+├── scripts/
+└── README.md

@@ -3,9 +3,9 @@ package service
 
 import (
 	"context"
-	"portfolio-ai/internal/technology/entity"
-	"portfolio-ai/internal/technology/repository"
-	"portfolio-ai/pkg/ulid"
+	"dan-ai/internal/technology/entity"
+	"dan-ai/internal/technology/repository"
+	"dan-ai/pkg/ulid"
 )
 
 // Service defines the interface for Technology business operations.

@@ -3,7 +3,7 @@ package postgres
 
 import (
 	"fmt"
-	"portfolio-ai/pkg/config"
+	"dan-ai/pkg/config"
 
 	gormpostgres "gorm.io/driver/postgres"
 	"gorm.io/gorm"

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package portfolio.knowledge.v1;
 
-option go_package = "portfolio-ai/proto/knowledge";
+option go_package = "dan-ai/proto/knowledge";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";

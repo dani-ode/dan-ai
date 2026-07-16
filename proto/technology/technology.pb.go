@@ -138,7 +138,7 @@ const file_technology_technology_proto_rawDesc = "" +
 	"\fofficial_url\x18\x06 \x01(\tR\vofficialUrl\x12\x12\n" +
 	"\x04logo\x18\a \x01(\tR\x04logo\x129\n" +
 	"\n" +
-	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\x1fZ\x1dportfolio-ai/proto/technologyb\x06proto3"
+	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\x19Z\x17dan-ai/proto/technologyb\x06proto3"
 
 var (
 	file_technology_technology_proto_rawDescOnce sync.Once

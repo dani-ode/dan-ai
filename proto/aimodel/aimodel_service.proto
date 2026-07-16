@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package aimodel;
 
-option go_package = "portfolio-ai/proto/aimodel";
+option go_package = "dan-ai/proto/aimodel";
 
 import "aimodel/aimodel.proto";
 

@@ -591,7 +591,7 @@ const file_skill_skill_service_proto_rawDesc = "" +
 	"\bGetSkill\x12\x16.skill.GetSkillRequest\x1a\x17.skill.GetSkillResponse\x12D\n" +
 	"\vCreateSkill\x12\x19.skill.CreateSkillRequest\x1a\x1a.skill.CreateSkillResponse\x12D\n" +
 	"\vUpdateSkill\x12\x19.skill.UpdateSkillRequest\x1a\x1a.skill.UpdateSkillResponse\x12D\n" +
-	"\vDeleteSkill\x12\x19.skill.DeleteSkillRequest\x1a\x1a.skill.DeleteSkillResponseB\x1aZ\x18portfolio-ai/proto/skillb\x06proto3"
+	"\vDeleteSkill\x12\x19.skill.DeleteSkillRequest\x1a\x1a.skill.DeleteSkillResponseB\x14Z\x12dan-ai/proto/skillb\x06proto3"
 
 var (
 	file_skill_skill_service_proto_rawDescOnce sync.Once

@@ -1,3 +1,3 @@
 package constants
 
-const AppName = "portfolio-ai"
+const AppName = "dan-ai"

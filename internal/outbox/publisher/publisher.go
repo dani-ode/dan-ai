@@ -3,8 +3,8 @@ package publisher
 import (
 	"context"
 	"log"
-	"portfolio-ai/internal/outbox/repository"
-	"portfolio-ai/pkg/kafka"
+	"dan-ai/internal/outbox/repository"
+	"dan-ai/pkg/kafka"
 	"time"
 )
 

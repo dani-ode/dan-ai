@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package chat;
 
-option go_package = "portfolio-ai/proto/chat";
+option go_package = "dan-ai/proto/chat";
 
 import "chat/chat.proto";
 import "google/protobuf/timestamp.proto";

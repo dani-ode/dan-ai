@@ -3,7 +3,7 @@ package entity
 
 import (
 	"time"
-	techEntity "portfolio-ai/internal/technology/entity"
+	techEntity "dan-ai/internal/technology/entity"
 )
 
 type Skill struct {

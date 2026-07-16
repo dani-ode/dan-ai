@@ -2,8 +2,8 @@
 package grpc
 
 import (
-	"portfolio-ai/internal/auth/jwt"
-	"portfolio-ai/internal/shared/interceptor"
+	"dan-ai/internal/auth/jwt"
+	"dan-ai/internal/shared/interceptor"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"

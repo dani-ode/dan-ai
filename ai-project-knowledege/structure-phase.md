@@ -49,6 +49,7 @@ Background Processing
 • Event Producer
 • Event Worker
 • Embedding Worker
+• Memory Worker
 
 ↓
 
@@ -64,21 +65,30 @@ Vector Search
 ↓
 
 Phase 6
-────────────────────
-AI Agent
+──────────────────
+Knowledge AI
 
 • Prompt Builder
-• Conversation Memory
 • RAG
+• Milvus
 • Tool Calling
-• LLM Provider (Gemini/OpenAI/Ollama)
 
 ↓
 
 Phase 7
-────────────────────
+──────────────────
+Long Term Memory
+
+• Memory Extractor
+• Memory Consolidation
+• Visitor Memory
+• Visitor Knowledge
+• Semantic Recall
+
+↓
+
+Phase 8
+──────────────────
 Realtime
 
-• gRPC Server Streaming
-• Streaming Response
-• Typing Animation
+• Streaming

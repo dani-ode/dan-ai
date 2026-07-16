@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"portfolio-ai/pkg/config"
+	"dan-ai/pkg/config"
 
 	"github.com/segmentio/kafka-go"
 )

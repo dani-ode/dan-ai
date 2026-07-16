@@ -7,10 +7,10 @@
 package skill
 
 import (
+	technology "dan-ai/proto/technology"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	technology "portfolio-ai/proto/technology"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -139,7 +139,7 @@ const file_skill_skill_proto_rawDesc = "" +
 	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x126\n" +
 	"\n" +
 	"technology\x18\b \x01(\v2\x16.technology.TechnologyR\n" +
-	"technologyB\x1aZ\x18portfolio-ai/proto/skillb\x06proto3"
+	"technologyB\x14Z\x12dan-ai/proto/skillb\x06proto3"
 
 var (
 	file_skill_skill_proto_rawDescOnce sync.Once

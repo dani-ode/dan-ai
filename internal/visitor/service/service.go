@@ -4,9 +4,9 @@ package service
 import (
 	"context"
 	"errors"
-	"portfolio-ai/internal/visitor/entity"
-	"portfolio-ai/internal/visitor/repository"
-	"portfolio-ai/pkg/ulid"
+	"dan-ai/internal/visitor/entity"
+	"dan-ai/internal/visitor/repository"
+	"dan-ai/pkg/ulid"
 
 	"gorm.io/gorm"
 )

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"portfolio-ai/internal/certificate/entity"
+	"dan-ai/internal/certificate/entity"
 )
 
 func BuildCertificateDocument(cert entity.Certificate) (title string, content string) {

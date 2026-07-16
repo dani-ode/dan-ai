@@ -3,7 +3,7 @@ package milvus
 import (
 	"context"
 	"fmt"
-	"portfolio-ai/pkg/config"
+	"dan-ai/pkg/config"
 
 	"github.com/milvus-io/milvus-sdk-go/v2/client"
 )

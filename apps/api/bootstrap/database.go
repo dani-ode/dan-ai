@@ -2,8 +2,8 @@
 package bootstrap
 
 import (
-	"portfolio-ai/pkg/config"
-	"portfolio-ai/pkg/postgres"
+	"dan-ai/pkg/config"
+	"dan-ai/pkg/postgres"
 
 	"gorm.io/gorm"
 )

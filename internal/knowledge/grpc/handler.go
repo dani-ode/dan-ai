@@ -3,9 +3,9 @@ package grpc
 import (
 	"context"
 
-	"portfolio-ai/internal/knowledge/mapper"
-	"portfolio-ai/internal/knowledge/service"
-	pb "portfolio-ai/proto/knowledge"
+	"dan-ai/internal/knowledge/mapper"
+	"dan-ai/internal/knowledge/service"
+	pb "dan-ai/proto/knowledge"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

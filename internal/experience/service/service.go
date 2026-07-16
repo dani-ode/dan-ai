@@ -5,11 +5,11 @@ import (
 	"context"
 	"log"
 
-	"portfolio-ai/internal/experience/entity"
-	"portfolio-ai/internal/experience/repository"
-	knowledgeBuilder "portfolio-ai/internal/knowledge/builder"
-	knowledgeService "portfolio-ai/internal/knowledge/service"
-	"portfolio-ai/pkg/ulid"
+	"dan-ai/internal/experience/entity"
+	"dan-ai/internal/experience/repository"
+	knowledgeBuilder "dan-ai/internal/knowledge/builder"
+	knowledgeService "dan-ai/internal/knowledge/service"
+	"dan-ai/pkg/ulid"
 )
 
 // Service defines the interface for Experience business operations.

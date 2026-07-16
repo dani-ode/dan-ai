@@ -3,7 +3,7 @@ package repository
 
 import (
 	"context"
-	"portfolio-ai/internal/chat/entity"
+	"dan-ai/internal/chat/entity"
 	"time"
 
 	"gorm.io/gorm"
@@ -20,6 +20,7 @@ type Repository interface {
 
 	// Message operations
 	CreateMessage(ctx context.Context, message *entity.ChatMessage) error
+	GetMessageByID(ctx context.Context, id string) (*entity.ChatMessage, error)
 	ListMessagesBySession(ctx context.Context, sessionID string) ([]entity.ChatMessage, error)
 	DeleteMessage(ctx context.Context, id string) error
 }
@@ -102,6 +103,14 @@ func (r *postgresRepository) ListMessagesBySession(ctx context.Context, sessionI
 		return nil, err
 	}
 	return messages, nil
+}
+
+func (r *postgresRepository) GetMessageByID(ctx context.Context, id string) (*entity.ChatMessage, error) {
+	var message entity.ChatMessage
+	if err := r.db.WithContext(ctx).First(&message, "id = ?", id).Error; err != nil {
+		return nil, err
+	}
+	return &message, nil
 }
 
 func (r *postgresRepository) DeleteMessage(ctx context.Context, id string) error {

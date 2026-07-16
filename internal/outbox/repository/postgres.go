@@ -4,12 +4,13 @@ import (
 	"context"
 	"time"
 
-	"portfolio-ai/internal/outbox/entity"
+	"dan-ai/internal/outbox/entity"
 
 	"gorm.io/gorm"
 )
 
 type Repository interface {
+	CreateEvent(ctx context.Context, event *entity.OutboxEvent) error
 	GetUnpublishedEvents(ctx context.Context, limit int) ([]entity.OutboxEvent, error)
 	MarkAsPublished(ctx context.Context, id string) error
 	MarkAsFailed(ctx context.Context, id string, reason string) error
@@ -43,6 +44,10 @@ func (r *postgresRepository) MarkAsPublished(ctx context.Context, id string) err
 			"published":    true,
 			"published_at": &now,
 		}).Error
+}
+
+func (r *postgresRepository) CreateEvent(ctx context.Context, event *entity.OutboxEvent) error {
+	return r.db.WithContext(ctx).Create(event).Error
 }
 
 func (r *postgresRepository) MarkAsFailed(ctx context.Context, id string, reason string) error {

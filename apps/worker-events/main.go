@@ -1,7 +1,7 @@
 package main
 
 import (
-	"portfolio-ai/apps/worker-events/bootstrap"
+	"dan-ai/apps/worker-events/bootstrap"
 )
 
 func main() {

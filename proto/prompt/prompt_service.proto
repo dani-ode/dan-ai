@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package prompt;
 
-option go_package = "portfolio-ai/proto/prompt";
+option go_package = "dan-ai/proto/prompt";
 
 import "prompt/prompt.proto";
 

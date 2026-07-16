@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package profile;
 
-option go_package = "portfolio-ai/proto/profile";
+option go_package = "dan-ai/proto/profile";
 
 import "google/protobuf/timestamp.proto";
 

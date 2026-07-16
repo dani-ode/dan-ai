@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"portfolio-ai/internal/project/entity"
+	"dan-ai/internal/project/entity"
 )
 
 func BuildProjectDocument(p entity.Project) (title string, content string) {

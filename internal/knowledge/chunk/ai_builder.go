@@ -3,8 +3,8 @@ package chunk
 import (
 	"context"
 	"fmt"
-	"portfolio-ai/internal/ai/provider"
-	"portfolio-ai/internal/knowledge/entity"
+	"dan-ai/internal/ai/provider"
+	"dan-ai/internal/knowledge/entity"
 )
 
 type Builder interface {

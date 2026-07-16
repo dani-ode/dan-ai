@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"portfolio-ai/internal/skill/entity"
+	"dan-ai/internal/skill/entity"
 )
 
 func BuildSkillDocument(skill entity.Skill) (title string, content string) {

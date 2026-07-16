@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 
-	"portfolio-ai/internal/knowledge/entity"
-	outboxEntity "portfolio-ai/internal/outbox/entity"
+	"dan-ai/internal/knowledge/entity"
+	outboxEntity "dan-ai/internal/outbox/entity"
 	"gorm.io/gorm"
 )
 

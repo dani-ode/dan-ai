@@ -5,11 +5,11 @@ import (
 	"context"
 	"log"
 
-	knowledgeBuilder "portfolio-ai/internal/knowledge/builder"
-	knowledgeService "portfolio-ai/internal/knowledge/service"
-	"portfolio-ai/internal/profile/entity"
-	"portfolio-ai/internal/profile/repository"
-	"portfolio-ai/pkg/ulid"
+	knowledgeBuilder "dan-ai/internal/knowledge/builder"
+	knowledgeService "dan-ai/internal/knowledge/service"
+	"dan-ai/internal/profile/entity"
+	"dan-ai/internal/profile/repository"
+	"dan-ai/pkg/ulid"
 )
 
 // Service defines the interface for Profile business operations.
