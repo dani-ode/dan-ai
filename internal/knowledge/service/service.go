@@ -4,12 +4,14 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"time"
 
 	"dan-ai/internal/knowledge/entity"
 	"dan-ai/internal/knowledge/repository"
 	outboxEntity "dan-ai/internal/outbox/entity"
+	promptrepo "dan-ai/internal/prompt/repository"
 
 	"github.com/oklog/ulid/v2"
 )
@@ -23,11 +25,12 @@ type Service interface {
 }
 
 type service struct {
-	repo repository.KnowledgeRepository
+	repo       repository.KnowledgeRepository
+	promptRepo promptrepo.Repository
 }
 
-func NewService(repo repository.KnowledgeRepository) Service {
-	return &service{repo: repo}
+func NewService(repo repository.KnowledgeRepository, promptRepo promptrepo.Repository) Service {
+	return &service{repo: repo, promptRepo: promptRepo}
 }
 
 func (s *service) Sync(ctx context.Context, sourceType, sourceID, title, content string) error {
@@ -87,13 +90,36 @@ func (s *service) Sync(ctx context.Context, sourceType, sourceID, title, content
 		}
 	}
 
-	// 3. Create OutboxEvent to trigger the AI Embedding Worker
+	// 3. Resolve prompt for the Knowledge Builder (prefer "Knowledge Chunker", fallback to first active)
+	promptID := ""
+	allPrompts, err := s.promptRepo.List(ctx, false)
+	if err == nil {
+		for _, p := range allPrompts {
+			if p.Name == "Knowledge Chunker" {
+				promptID = p.ID
+				break
+			}
+		}
+	}
+	if promptID == "" {
+		prompts, err := s.promptRepo.List(ctx, true)
+		if err == nil && len(prompts) > 0 {
+			promptID = prompts[0].ID
+		}
+	}
+
+	// 4. Create OutboxEvent to trigger the AI Embedding Worker
+	payload, _ := json.Marshal(map[string]string{
+		"source_type": sourceType,
+		"source_id":   sourceID,
+		"prompt_id":   promptID,
+	})
 	outboxEvent := &outboxEntity.OutboxEvent{
 		ID:          ulid.Make().String(),
 		Aggregate:   sourceType,
 		AggregateID: sourceID,
 		EventType:   "updated",
-		Payload:     []byte(`{"source_type":"` + sourceType + `","source_id":"` + sourceID + `"}`),
+		Payload:     payload,
 		Published:   false,
 		RetryCount:  0,
 		CreatedAt:   time.Now(),

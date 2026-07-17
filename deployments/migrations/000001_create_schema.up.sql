@@ -1,10 +1,26 @@
--- deployments/migrations/000002_create_remaining_tables.up.sql
+-- deployments/migrations/000001_create_schema.up.sql
 
--- Alter profiles table
-ALTER TABLE profiles ADD COLUMN availability TEXT;
-ALTER TABLE profiles ADD COLUMN timezone TEXT;
+-- 1. Create profiles table
+CREATE TABLE profiles (
+    id CHAR(26) PRIMARY KEY,
+    full_name TEXT NOT NULL,
+    headline TEXT,
+    bio TEXT,
+    email TEXT,
+    phone TEXT,
+    location TEXT,
+    github TEXT,
+    linkedin TEXT,
+    website TEXT,
+    avatar TEXT,
+    resume_url TEXT,
+    availability TEXT, -- Available, Busy, Not Looking
+    timezone TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
--- Create experiences table
+-- 2. Create experiences table
 CREATE TABLE experiences (
     id CHAR(26) PRIMARY KEY,
     company TEXT NOT NULL,
@@ -18,12 +34,12 @@ CREATE TABLE experiences (
     display_order INT DEFAULT 0,
     company_logo TEXT,
     skills JSONB,
-    remote_type TEXT,
+    remote_type TEXT, -- Remote, Hybrid, Onsite
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Create projects table
+-- 3. Create projects table
 CREATE TABLE projects (
     id CHAR(26) PRIMARY KEY,
     slug TEXT UNIQUE NOT NULL,
@@ -35,7 +51,7 @@ CREATE TABLE projects (
     demo_url TEXT,
     thumbnail TEXT,
     featured BOOLEAN DEFAULT FALSE,
-    status TEXT DEFAULT 'Draft',
+    status TEXT DEFAULT 'Draft', -- Draft, Published, Archived
     github_stars INT DEFAULT 0,
     github_last_commit TIMESTAMPTZ,
     read_time INT DEFAULT 0,
@@ -43,7 +59,7 @@ CREATE TABLE projects (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Create technologies table
+-- 4. Create technologies table
 CREATE TABLE technologies (
     id CHAR(26) PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
@@ -55,7 +71,7 @@ CREATE TABLE technologies (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Create project_technologies table
+-- 5. Create project_technologies table (Many-to-many)
 CREATE TABLE project_technologies (
     project_id CHAR(26) NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
     technology_id CHAR(26) NOT NULL REFERENCES technologies(id) ON DELETE CASCADE,
@@ -63,7 +79,7 @@ CREATE TABLE project_technologies (
     PRIMARY KEY (project_id, technology_id)
 );
 
--- Create certificates table
+-- 6. Create certificates table
 CREATE TABLE certificates (
     id CHAR(26) PRIMARY KEY,
     title TEXT NOT NULL,
@@ -78,53 +94,34 @@ CREATE TABLE certificates (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Create skills table
+-- 7. Create skills table
 CREATE TABLE skills (
     id CHAR(26) PRIMARY KEY,
-    display_order INT DEFAULT 0,
     technology_id CHAR(26) NOT NULL REFERENCES technologies(id) ON DELETE CASCADE,
+    display_order INT DEFAULT 0,
     level TEXT,
     years NUMERIC(4, 1) DEFAULT 0.0,
     favorite BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Create blogs table
-CREATE TABLE blogs (
-    id CHAR(26) PRIMARY KEY,
-    slug TEXT UNIQUE NOT NULL,
-    title TEXT NOT NULL,
-    excerpt TEXT,
-    content TEXT,
-    cover TEXT,
-    cover_alt TEXT,
-    published BOOLEAN DEFAULT FALSE,
-    published_at TIMESTAMPTZ,
-    reading_time INT DEFAULT 0,
-    tags JSONB,
-    seo_description TEXT,
-    seo_keywords TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- Create knowledge_documents table
+-- 8. Create knowledge_documents table
 CREATE TABLE knowledge_documents (
     id CHAR(26) PRIMARY KEY,
-    source_type TEXT NOT NULL,
+    source_type TEXT NOT NULL, -- profile, experience, project, certificate, blog, manual
     source_id CHAR(26),
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     checksum TEXT NOT NULL,
     version INT DEFAULT 1,
-    status TEXT NOT NULL DEFAULT 'Pending',
+    status TEXT NOT NULL DEFAULT 'Pending', -- Pending, Embedding, Embedded, Failed
     embedding_model TEXT,
     last_embedded_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Create knowledge_chunks table
+-- 9. Create knowledge_chunks table
 CREATE TABLE knowledge_chunks (
     id CHAR(26) PRIMARY KEY,
     document_id CHAR(26) NOT NULL REFERENCES knowledge_documents(id) ON DELETE CASCADE,
@@ -135,7 +132,7 @@ CREATE TABLE knowledge_chunks (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Create visitors table
+-- 10. Create visitors table
 CREATE TABLE visitors (
     id CHAR(26) PRIMARY KEY,
     first_seen_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -145,7 +142,7 @@ CREATE TABLE visitors (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Create visitor_memories table
+-- 11. Create visitor_memories table (facts)
 CREATE TABLE visitor_memories (
     id CHAR(26) PRIMARY KEY,
     visitor_id CHAR(26) NOT NULL REFERENCES visitors(id) ON DELETE CASCADE,
@@ -159,7 +156,18 @@ CREATE TABLE visitor_memories (
     UNIQUE (visitor_id, key)
 );
 
--- Create ai_models table
+-- 12. Create visitor_knowledge table (summary of visitor chat)
+CREATE TABLE visitor_knowledge (
+    id CHAR(26) PRIMARY KEY,
+    visitor_id CHAR(26) NOT NULL REFERENCES visitors(id) ON DELETE CASCADE,
+    category TEXT,
+    memory_text TEXT NOT NULL,
+    importance INT DEFAULT 3,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 13. Create ai_models table
 CREATE TABLE ai_models (
     id CHAR(26) PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
@@ -172,7 +180,7 @@ CREATE TABLE ai_models (
     enabled BOOLEAN DEFAULT TRUE
 );
 
--- Create prompts table
+-- 14. Create prompts table
 CREATE TABLE prompts (
     id CHAR(26) PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
@@ -184,7 +192,7 @@ CREATE TABLE prompts (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Create chat_sessions table
+-- 15. Create chat_sessions table
 CREATE TABLE chat_sessions (
     id CHAR(26) PRIMARY KEY,
     visitor_id CHAR(26) NOT NULL REFERENCES visitors(id) ON DELETE CASCADE,
@@ -196,22 +204,22 @@ CREATE TABLE chat_sessions (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Create chat_messages table
+-- 16. Create chat_messages table
 CREATE TABLE chat_messages (
     id CHAR(26) PRIMARY KEY,
     session_id CHAR(26) NOT NULL REFERENCES chat_sessions(id) ON DELETE CASCADE,
-    role TEXT NOT NULL,
+    role TEXT NOT NULL, -- system, user, assistant, tool
     content TEXT NOT NULL,
     model TEXT,
     prompt_tokens INT,
     completion_tokens INT,
     latency_ms INT,
-    status TEXT NOT NULL DEFAULT 'Pending',
+    status TEXT NOT NULL DEFAULT 'Pending', -- Pending, Streaming, Completed, Error
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Create ai_tools table
+-- 17. Create ai_tools table
 CREATE TABLE ai_tools (
     id CHAR(26) PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
@@ -221,7 +229,7 @@ CREATE TABLE ai_tools (
     enabled BOOLEAN DEFAULT TRUE
 );
 
--- Create outbox_events table
+-- 18. Create outbox_events table
 CREATE TABLE outbox_events (
     id CHAR(26) PRIMARY KEY,
     aggregate TEXT NOT NULL,
@@ -235,7 +243,22 @@ CREATE TABLE outbox_events (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Create audit_logs table
+-- 19. Create embedding_profiles table
+CREATE TABLE embedding_profiles (
+    id CHAR(26) PRIMARY KEY,
+    name TEXT UNIQUE NOT NULL,
+    provider TEXT NOT NULL,
+    model TEXT NOT NULL,
+    dimension INT NOT NULL,
+    metric_type TEXT NOT NULL DEFAULT 'COSINE',
+    knowledge_collection TEXT NOT NULL,
+    visitor_collection TEXT NOT NULL,
+    is_active BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 20. Create audit_logs table
 CREATE TABLE audit_logs (
     id CHAR(26) PRIMARY KEY,
     table_name TEXT NOT NULL,
@@ -247,7 +270,7 @@ CREATE TABLE audit_logs (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Create retrieval_logs table
+-- 21. Create retrieval_logs table
 CREATE TABLE retrieval_logs (
     id CHAR(26) PRIMARY KEY,
     session_id CHAR(26) REFERENCES chat_sessions(id) ON DELETE SET NULL,

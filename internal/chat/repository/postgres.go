@@ -4,6 +4,7 @@ package repository
 import (
 	"context"
 	"dan-ai/internal/chat/entity"
+	knowledgeEntity "dan-ai/internal/knowledge/entity"
 	"time"
 
 	"gorm.io/gorm"
@@ -20,9 +21,13 @@ type Repository interface {
 
 	// Message operations
 	CreateMessage(ctx context.Context, message *entity.ChatMessage) error
+	UpdateMessage(ctx context.Context, message *entity.ChatMessage) error
 	GetMessageByID(ctx context.Context, id string) (*entity.ChatMessage, error)
 	ListMessagesBySession(ctx context.Context, sessionID string) ([]entity.ChatMessage, error)
 	DeleteMessage(ctx context.Context, id string) error
+
+	// Chunk content retrieval
+	GetKnowledgeChunksByIDs(ctx context.Context, ids []string) ([]knowledgeEntity.KnowledgeChunk, error)
 }
 
 type postgresRepository struct {
@@ -94,6 +99,10 @@ func (r *postgresRepository) CreateMessage(ctx context.Context, message *entity.
 	return r.db.WithContext(ctx).Create(message).Error
 }
 
+func (r *postgresRepository) UpdateMessage(ctx context.Context, message *entity.ChatMessage) error {
+	return r.db.WithContext(ctx).Save(message).Error
+}
+
 func (r *postgresRepository) ListMessagesBySession(ctx context.Context, sessionID string) ([]entity.ChatMessage, error) {
 	var messages []entity.ChatMessage
 	if err := r.db.WithContext(ctx).
@@ -122,4 +131,13 @@ func (r *postgresRepository) DeleteMessage(ctx context.Context, id string) error
 		return gorm.ErrRecordNotFound
 	}
 	return nil
+}
+
+func (r *postgresRepository) GetKnowledgeChunksByIDs(ctx context.Context, ids []string) ([]knowledgeEntity.KnowledgeChunk, error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
+	var chunks []knowledgeEntity.KnowledgeChunk
+	err := r.db.WithContext(ctx).Where("id IN ?", ids).Find(&chunks).Error
+	return chunks, err
 }

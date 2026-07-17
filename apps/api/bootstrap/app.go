@@ -2,14 +2,22 @@
 package bootstrap
 
 import (
+	"context"
 	"fmt"
 	"net"
+	"time"
+
+	aiClient "dan-ai/internal/ai/client"
+	aiprovider "dan-ai/internal/ai/provider"
+	"dan-ai/pkg/milvus"
 
 	aimodelgrpc "dan-ai/internal/aimodel/grpc"
 	aimodelrepo "dan-ai/internal/aimodel/repository"
 	aimodelsvc "dan-ai/internal/aimodel/service"
 	authgrpc "dan-ai/internal/auth/grpc"
 	"dan-ai/internal/auth/jwt"
+	embeddingrepo "dan-ai/internal/embedding/repository"
+	memoryrepo "dan-ai/internal/memory/repository"
 	certgrpc "dan-ai/internal/certificate/grpc"
 	certrepo "dan-ai/internal/certificate/repository"
 	certsvc "dan-ai/internal/certificate/service"
@@ -100,7 +108,15 @@ func NewApp() (*App, error) {
 
 	// 6.5 Initialize Knowledge module (core of Phase 3)
 	knowledgeRepo := knowledgerepo.NewPostgresKnowledgeRepository(db)
-	knowledgeService := knowledgesvc.NewService(knowledgeRepo)
+
+	// Prompt repo is needed by knowledge service to resolve model for embedding
+	promptRepo := promptrepo.NewPostgresRepository(db)
+	promptService := promptsvc.NewService(promptRepo)
+	promptHandler := promptgrpc.NewHandler(promptService)
+	promptpb.RegisterPromptServiceServer(grpcServer, promptHandler)
+	logger.Info("Prompt service registered")
+
+	knowledgeService := knowledgesvc.NewService(knowledgeRepo, promptRepo)
 	knowledgeHandler := knowledgegrpc.NewKnowledgeHandler(knowledgeService)
 	knowledgepb.RegisterKnowledgeServiceServer(grpcServer, knowledgeHandler)
 	logger.Info("Knowledge service registered")
@@ -112,12 +128,7 @@ func NewApp() (*App, error) {
 	profilepb.RegisterProfileServiceServer(grpcServer, profileHandler)
 	logger.Info("Profile service registered")
 
-	// 8. Initialize Prompt module
-	promptRepo := promptrepo.NewPostgresRepository(db)
-	promptService := promptsvc.NewService(promptRepo)
-	promptHandler := promptgrpc.NewHandler(promptService)
-	promptpb.RegisterPromptServiceServer(grpcServer, promptHandler)
-	logger.Info("Prompt service registered")
+	// 8. Initialize Prompt module — already initialized above with knowledge service
 
 	// 9. Initialize Visitor module
 	visitorRepo := visitorrepo.NewPostgresRepository(db)
@@ -129,9 +140,35 @@ func NewApp() (*App, error) {
 	// 10. Initialize Outbox module for chat events
 	outboxRepo := outboxrepo.NewPostgresRepository(db)
 
+	// Initialize Milvus client for chat retrieval
+	milvusCtx, milvusCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	mClient, err := milvus.NewClient(milvusCtx, cfg)
+	milvusCancel()
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to milvus: %w", err)
+	}
+
+	// Initialize AI provider registry for multi-provider support
+	aiRegistry := aiprovider.NewRegistry()
+
+	// Always register Gemini (current default)
+	genaiClient, err := aiClient.NewClient(context.Background(), cfg)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize Gemini AI client: %w", err)
+	}
+	aiRegistry.Register("gemini", aiprovider.NewGeminiProvider(genaiClient))
+
+	// Register OpenAI if API key is configured
+	if cfg.AI.OpenAIAPIKey != "" {
+		aiRegistry.Register("openai", aiprovider.NewOpenAIProvider(cfg.AI.OpenAIAPIKey))
+		logger.Info("OpenAI provider registered")
+	}
+
 	// 11. Initialize Chat module
 	chatRepo := chatrepo.NewPostgresRepository(db)
-	chatService := chatsvc.NewService(chatRepo, outboxRepo)
+	memoryRepo := memoryrepo.NewPostgresRepository(db)
+	embeddingRepo := embeddingrepo.NewPostgresRepository(db)
+	chatService := chatsvc.NewService(chatRepo, outboxRepo, mClient, aiRegistry, promptRepo, visitorService, memoryRepo, embeddingRepo)
 	chatHandler := chatgrpc.NewHandler(chatService, visitorService)
 	chatpb.RegisterChatServiceServer(grpcServer, chatHandler)
 	logger.Info("Chat service registered")

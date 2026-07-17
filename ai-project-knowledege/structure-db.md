@@ -129,7 +129,7 @@ total_messages
 created_at
 updated_at
 
-# 11. visitor_memories
+# 11. visitor_memories #facts
 
 id #ULID
 visitor_id
@@ -141,7 +141,18 @@ last_confirmed_at
 created_at
 updated_at
 
-# 12. chat_sessions
+# 12. visitor_knowledge #for milvus, summerize visitor chat (visitor and assistan)
+
+id #ULID
+visitor_id
+category
+memory_text
+importance
+created_at
+updated_at
+
+
+# 13. chat_sessions
 
 id #ULID
 visitor_id
@@ -152,7 +163,7 @@ ended_at
 created_at
 updated_at
 
-# 13. chat_messages
+# 14. chat_messages
 
 id #ULID
 session_id
@@ -166,7 +177,7 @@ status #Pending, Streaming, Completed, Error
 created_at
 updated_at
 
-# 14. prompts
+# 15. prompts
 
 id #ULID
 name
@@ -177,7 +188,7 @@ active
 version
 created_at
 
-# 15. ai_models
+# 16. ai_models
 
 id #ULID
 name
@@ -189,7 +200,7 @@ supports_tools
 supports_stream
 enabled
 
-# 16. ai_tools #Kalau nanti Agent punya tool.
+# 17. ai_tools #Kalau nanti Agent punya tool.
 
 id #ULID
 name
@@ -198,7 +209,7 @@ config #JSON
 description
 enabled
 
-# 17. outbox_events #Kafka Event.
+# 18. outbox_events #Kafka Event.
 
 id #ULID
 aggregate
@@ -210,3 +221,17 @@ retry_count
 failed_reason
 published_at
 created_at
+
+# 18. embedding_profiles #Profile for embedding vector (Milvus).
+
+id #ULID
+name
+provider
+model
+dimension
+metric_type
+knowledge_collection
+visitor_collection
+is_active
+created_at
+updated_at

@@ -9,20 +9,25 @@ import (
 	"dan-ai/internal/chat/repository"
 	"dan-ai/internal/memory/extractor"
 	"dan-ai/internal/memory/service"
+	promptrepo "dan-ai/internal/prompt/repository"
 	"dan-ai/pkg/kafka"
 )
 
+const defaultMemoryModel = "gemini-3.1-flash-lite"
+
 type Processor struct {
-	chatRepo     repository.Repository
-	memorySvc    service.Service
-	extractor    extractor.Extractor
+	chatRepo   repository.Repository
+	memorySvc  service.Service
+	extractor  extractor.Extractor
+	promptRepo promptrepo.Repository
 }
 
-func NewProcessor(chatRepo repository.Repository, memorySvc service.Service, extractor extractor.Extractor) *Processor {
+func NewProcessor(chatRepo repository.Repository, memorySvc service.Service, extractor extractor.Extractor, promptRepo promptrepo.Repository) *Processor {
 	return &Processor{
-		chatRepo:  chatRepo,
-		memorySvc: memorySvc,
-		extractor: extractor,
+		chatRepo:   chatRepo,
+		memorySvc:  memorySvc,
+		extractor:  extractor,
+		promptRepo: promptRepo,
 	}
 }
 
@@ -30,6 +35,7 @@ type chatCompletedPayload struct {
 	VisitorID          string `json:"visitor_id"`
 	SessionID          string `json:"session_id"`
 	AssistantMessageID string `json:"assistant_message_id"`
+	PromptID           string `json:"prompt_id"`
 }
 
 func (p *Processor) ProcessEvent(ctx context.Context, event kafka.Event) error {
@@ -42,6 +48,15 @@ func (p *Processor) ProcessEvent(ctx context.Context, event kafka.Event) error {
 		return fmt.Errorf("failed to unmarshal chat.completed payload: %w", err)
 	}
 
+	// Resolve model name from prompt_id
+	modelName := defaultMemoryModel
+	if payload.PromptID != "" {
+		prompt, err := p.promptRepo.Get(ctx, payload.PromptID)
+		if err == nil && prompt.AIModel.Name != "" {
+			modelName = prompt.AIModel.Name
+		}
+	}
+
 	messages, err := p.chatRepo.ListMessagesBySession(ctx, payload.SessionID)
 	if err != nil {
 		return fmt.Errorf("failed to list messages for session %s: %w", payload.SessionID, err)
@@ -52,7 +67,7 @@ func (p *Processor) ProcessEvent(ctx context.Context, event kafka.Event) error {
 		return nil
 	}
 
-	memories, err := p.extractor.ExtractMemories(ctx, payload.VisitorID, messages, payload.AssistantMessageID)
+	memories, err := p.extractor.ExtractMemories(ctx, modelName, payload.VisitorID, messages, payload.AssistantMessageID)
 	if err != nil {
 		return fmt.Errorf("failed to extract memories: %w", err)
 	}
@@ -62,10 +77,10 @@ func (p *Processor) ProcessEvent(ctx context.Context, event kafka.Event) error {
 		return nil
 	}
 
-	if err := p.memorySvc.SaveMemories(ctx, memories); err != nil {
+	if err := p.memorySvc.SaveMemories(ctx, modelName, memories); err != nil {
 		return fmt.Errorf("failed to save memories: %w", err)
 	}
 
-	log.Printf("saved %d memory records for visitor %s", len(memories), payload.VisitorID)
+	log.Printf("saved %d memory records for visitor %s using model %s", len(memories), payload.VisitorID, modelName)
 	return nil
 }

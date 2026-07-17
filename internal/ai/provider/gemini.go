@@ -2,19 +2,26 @@ package provider
 
 import (
 	"context"
+	"dan-ai/internal/ai/client"
+	"dan-ai/internal/ai/schema"
 	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
-	"dan-ai/internal/ai/client"
-	"dan-ai/internal/ai/schema"
 
 	"github.com/google/generative-ai-go/genai"
 )
 
+type ChatResponse struct {
+	Content          string
+	PromptTokens     int32
+	CompletionTokens int32
+}
+
 type Provider interface {
-	GenerateChunks(ctx context.Context, documentTitle, documentContent string) ([]schema.Chunk, error)
-	GenerateEmbedding(ctx context.Context, text string) ([]float32, error)
+	GenerateChunks(ctx context.Context, modelName, systemInstruction, documentTitle, documentContent string) ([]schema.Chunk, error)
+	GenerateEmbedding(ctx context.Context, modelName, text string) ([]float32, error)
+	GenerateChatResponse(ctx context.Context, modelName, systemInstruction string, prompt string) (*ChatResponse, error)
 }
 
 type geminiProvider struct {
@@ -27,18 +34,17 @@ func NewGeminiProvider(client *client.Client) Provider {
 	}
 }
 
-func (p *geminiProvider) GenerateChunks(ctx context.Context, documentTitle, documentContent string) ([]schema.Chunk, error) {
-	model := p.client.GenerativeModel("gemini-3.5-flash")
+func (p *geminiProvider) GenerateChunks(ctx context.Context, modelName, systemInstruction, documentTitle, documentContent string) ([]schema.Chunk, error) {
+	model := p.client.GenerativeModel(modelName)
 	model.ResponseMIMEType = "application/json"
 
-	// Construct JSON schema manually or rely on basic JSON mode.
-	// Gemini JSON schema syntax requires structured format, but for simplicity we rely on a strong system prompt + MIME type
-	model.SystemInstruction = genai.NewUserContent(genai.Text(`You are an expert knowledge extractor. 
-Your task is to chunk the provided document into self-contained segments suitable for vector search.
-Return a JSON object with a "chunks" array. Each chunk must have "title", "content" (the detailed text), and "keywords" (array of strings).`))
+	// Use system instruction from the prompt config
+	if systemInstruction != "" {
+		model.SystemInstruction = genai.NewUserContent(genai.Text(systemInstruction))
+	}
 
 	prompt := fmt.Sprintf("Document Title: %s\n\nDocument Content:\n%s", documentTitle, documentContent)
-	
+
 	resp, err := model.GenerateContent(ctx, genai.Text(prompt))
 	if err != nil {
 		return nil, fmt.Errorf("gemini chunk generation failed: %w", err)
@@ -55,7 +61,7 @@ Return a JSON object with a "chunks" array. Each chunk must have "title", "conte
 	}
 
 	rawText := string(textPart)
-	
+
 	// Robust JSON extraction: find first '{' and last '}'
 	startIdx := strings.Index(rawText, "{")
 	endIdx := strings.LastIndex(rawText, "}")
@@ -79,8 +85,8 @@ Return a JSON object with a "chunks" array. Each chunk must have "title", "conte
 	return result.Chunks, nil
 }
 
-func (p *geminiProvider) GenerateEmbedding(ctx context.Context, text string) ([]float32, error) {
-	em := p.client.EmbeddingModel("gemini-embedding-2")
+func (p *geminiProvider) GenerateEmbedding(ctx context.Context, modelName, text string) ([]float32, error) {
+	em := p.client.EmbeddingModel(modelName)
 	res, err := em.EmbedContent(ctx, genai.Text(text))
 	if err != nil {
 		return nil, fmt.Errorf("gemini embedding failed: %w", err)
@@ -91,4 +97,38 @@ func (p *geminiProvider) GenerateEmbedding(ctx context.Context, text string) ([]
 	}
 
 	return res.Embedding.Values, nil
+}
+
+func (p *geminiProvider) GenerateChatResponse(ctx context.Context, modelName, systemInstruction string, prompt string) (*ChatResponse, error) {
+	model := p.client.GenerativeModel(modelName)
+	if systemInstruction != "" {
+		model.SystemInstruction = genai.NewUserContent(genai.Text(systemInstruction))
+	}
+
+	resp, err := model.GenerateContent(ctx, genai.Text(prompt))
+	if err != nil {
+		return nil, fmt.Errorf("gemini generate content failed: %w", err)
+	}
+
+	if len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) == 0 {
+		return nil, fmt.Errorf("no content returned from gemini")
+	}
+
+	part := resp.Candidates[0].Content.Parts[0]
+	textPart, ok := part.(genai.Text)
+	if !ok {
+		return nil, fmt.Errorf("unexpected response type from gemini")
+	}
+
+	var promptTokens, completionTokens int32
+	if resp.UsageMetadata != nil {
+		promptTokens = resp.UsageMetadata.PromptTokenCount
+		completionTokens = resp.UsageMetadata.CandidatesTokenCount
+	}
+
+	return &ChatResponse{
+		Content:          string(textPart),
+		PromptTokens:     promptTokens,
+		CompletionTokens: completionTokens,
+	}, nil
 }

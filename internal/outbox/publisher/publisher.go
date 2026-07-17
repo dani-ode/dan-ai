@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-const TopicPortfolioKnowledge = "portfolio.knowledge"
-const TopicPortfolioEvents = "portfolio.events"
+const TopicDanKnowledge = "dan.knowledge"
+const TopicDanEvents = "dan.events"
 
 type Publisher struct {
 	repo          repository.Repository
@@ -60,9 +60,9 @@ func (p *Publisher) processOutbox(ctx context.Context) {
 		// Determine target topic
 		var targetTopic string
 		if evt.Aggregate == "knowledge_document" || evt.Aggregate == "project" || evt.Aggregate == "profile" || evt.Aggregate == "experience" || evt.Aggregate == "certificate" {
-			targetTopic = TopicPortfolioKnowledge
+			targetTopic = TopicDanKnowledge
 		} else {
-			targetTopic = TopicPortfolioEvents
+			targetTopic = TopicDanEvents
 		}
 
 		// Publish to Kafka

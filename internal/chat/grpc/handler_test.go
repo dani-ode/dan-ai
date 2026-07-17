@@ -25,10 +25,11 @@ import (
 
 // mockChatService implements service.Service.
 type mockChatService struct {
-	getSessionFn    func(ctx context.Context, id string) (*entity.ChatSession, error)
-	createSessionFn func(ctx context.Context, visitorID, promptID string) (*entity.ChatSession, error)
-	listMessagesFn  func(ctx context.Context, sessionID string) ([]entity.ChatMessage, error)
-	createMessageFn func(ctx context.Context, sessionID, role, content string) (*entity.ChatMessage, error)
+	getSessionFn      func(ctx context.Context, id string) (*entity.ChatSession, error)
+	createSessionFn   func(ctx context.Context, visitorID, promptID string) (*entity.ChatSession, error)
+	listMessagesFn    func(ctx context.Context, sessionID string) ([]entity.ChatMessage, error)
+	createMessageFn   func(ctx context.Context, sessionID, role, content string) (*entity.ChatMessage, error)
+	sendChatMessageFn func(ctx context.Context, sessionID, visitorID, promptID, content string) (*entity.ChatMessage, error)
 }
 
 func (m *mockChatService) GetSession(ctx context.Context, id string) (*entity.ChatSession, error) {
@@ -67,6 +68,12 @@ func (m *mockChatService) RenameSession(ctx context.Context, id, title string) (
 }
 func (m *mockChatService) DeleteSession(ctx context.Context, id string) error { return nil }
 func (m *mockChatService) DeleteMessage(ctx context.Context, id string) error { return nil }
+func (m *mockChatService) SendChatMessage(ctx context.Context, sessionID, visitorID, promptID, content string) (*entity.ChatMessage, error) {
+	if m.sendChatMessageFn != nil {
+		return m.sendChatMessageFn(ctx, sessionID, visitorID, promptID, content)
+	}
+	return &entity.ChatMessage{ID: "msg-id", SessionID: sessionID, Role: "assistant", Content: "reply-content"}, nil
+}
 
 // mockVisitorService implements visitorsvc.Service.
 type mockVisitorService struct {
@@ -99,47 +106,35 @@ func newTestHandler(svc *mockChatService, vsvc visitorsvc.Service) *Handler {
 // Tests
 // ---------------------------------------------------------------------------
 
-// TestSendChatMessage_ExistingSession verifies that when a valid session_id is
-// provided and GetSession succeeds, the handler reuses the session without
-// creating a new one or registering a visitor.
+// TestSendChatMessage_ExistingSession verifies that SendChatMessage is successfully forwarded to the service.
 func TestSendChatMessage_ExistingSession(t *testing.T) {
 	ctx := context.Background()
 
-	existingSession := &entity.ChatSession{
-		ID:        "session-123",
-		VisitorID: "visitor-456",
-		PromptID:  "prompt-789",
-	}
-
 	svc := &mockChatService{
-		getSessionFn: func(_ context.Context, id string) (*entity.ChatSession, error) {
-			assert.Equal(t, "session-123", id)
-			return existingSession, nil
+		sendChatMessageFn: func(ctx context.Context, sessionID, visitorID, promptID, content string) (*entity.ChatMessage, error) {
+			assert.Equal(t, "session-123", sessionID)
+			assert.Equal(t, "new message", content)
+			return &entity.ChatMessage{
+				ID:        "msg-3",
+				SessionID: "session-123",
+				Role:      "assistant",
+				Content:   "reply from assistant",
+			}, nil
 		},
 		listMessagesFn: func(_ context.Context, sessionID string) ([]entity.ChatMessage, error) {
 			assert.Equal(t, "session-123", sessionID)
 			return []entity.ChatMessage{
 				{ID: "m1", Role: "user", Content: "hello", CreatedAt: time.Now()},
 				{ID: "m2", Role: "assistant", Content: "hi", CreatedAt: time.Now()},
+				{ID: "msg-3", Role: "assistant", Content: "reply from assistant", CreatedAt: time.Now()},
 			}, nil
 		},
-		createMessageFn: func(_ context.Context, sessionID, role, content string) (*entity.ChatMessage, error) {
-			assert.Equal(t, "session-123", sessionID)
-			assert.Equal(t, "user", role)
-			assert.Equal(t, "new message", content)
-			return &entity.ChatMessage{ID: "m3"}, nil
+		getSessionFn: func(_ context.Context, id string) (*entity.ChatSession, error) {
+			return &entity.ChatSession{ID: id, VisitorID: "visitor-456"}, nil
 		},
 	}
 
-	// visitorSvc must NOT be called when session already exists.
-	vsvc := &mockVisitorService{
-		registerFn: func(_ context.Context, _ string) (*visitorentity.Visitor, error) {
-			t.Fatal("Register should not be called when session already exists")
-			return nil, nil
-		},
-	}
-
-	h := newTestHandler(svc, vsvc)
+	h := newTestHandler(svc, &mockVisitorService{})
 	resp, err := h.SendChatMessage(ctx, &pb.SendChatMessageRequest{
 		SessionId: "session-123",
 		Content:   "new message",
@@ -149,9 +144,8 @@ func TestSendChatMessage_ExistingSession(t *testing.T) {
 	require.NotNil(t, resp)
 	assert.Equal(t, "session-123", resp.GetSessionId())
 	assert.Equal(t, "visitor-456", resp.GetVisitorId())
-	assert.Equal(t, "new message", resp.GetContent())
-	// 2 prior messages → both returned (≤ 3)
-	assert.Len(t, resp.GetRecentMessages(), 2)
+	assert.Equal(t, "reply from assistant", resp.GetContent())
+	assert.Len(t, resp.GetRecentMessages(), 3)
 }
 
 // TestSendChatMessage_ExistingSession_InheritsVisitorAndPrompt verifies that
@@ -161,6 +155,14 @@ func TestSendChatMessage_ExistingSession_InheritsVisitorAndPrompt(t *testing.T) 
 	ctx := context.Background()
 
 	svc := &mockChatService{
+		sendChatMessageFn: func(ctx context.Context, sessionID, visitorID, promptID, content string) (*entity.ChatMessage, error) {
+			return &entity.ChatMessage{
+				ID:        "msg-3",
+				SessionID: "sess-1",
+				Role:      "assistant",
+				Content:   "reply from assistant",
+			}, nil
+		},
 		getSessionFn: func(_ context.Context, _ string) (*entity.ChatSession, error) {
 			return &entity.ChatSession{
 				ID:        "sess-1",
@@ -170,14 +172,7 @@ func TestSendChatMessage_ExistingSession_InheritsVisitorAndPrompt(t *testing.T) 
 		},
 	}
 
-	vsvc := &mockVisitorService{
-		registerFn: func(_ context.Context, _ string) (*visitorentity.Visitor, error) {
-			t.Fatal("Register should not be called when session already exists")
-			return nil, nil
-		},
-	}
-
-	h := newTestHandler(svc, vsvc)
+	h := newTestHandler(svc, &mockVisitorService{})
 	resp, err := h.SendChatMessage(ctx, &pb.SendChatMessageRequest{
 		SessionId: "sess-1",
 		Content:   "hi",
@@ -188,64 +183,54 @@ func TestSendChatMessage_ExistingSession_InheritsVisitorAndPrompt(t *testing.T) 
 }
 
 // TestSendChatMessage_NewSession_NoSessionID verifies that when no session_id
-// is provided, the handler registers a visitor and creates a new session.
+// is provided, the handler delegates new session creation to service.
 func TestSendChatMessage_NewSession_NoSessionID(t *testing.T) {
 	ctx := context.Background()
 
-	registerCalled := false
-	createSessionCalled := false
-
-	vsvc := &mockVisitorService{
-		registerFn: func(_ context.Context, visitorID string) (*visitorentity.Visitor, error) {
-			registerCalled = true
-			assert.Equal(t, "", visitorID) // no visitor ID provided
-			return &visitorentity.Visitor{ID: "new-visitor-id"}, nil
-		},
-	}
-
 	svc := &mockChatService{
-		createSessionFn: func(_ context.Context, visitorID, promptID string) (*entity.ChatSession, error) {
-			createSessionCalled = true
+		sendChatMessageFn: func(ctx context.Context, sessionID, visitorID, promptID, content string) (*entity.ChatMessage, error) {
+			assert.Equal(t, "", sessionID)
 			assert.Equal(t, "new-visitor-id", visitorID)
-			return &entity.ChatSession{ID: "new-sess-id", VisitorID: "new-visitor-id"}, nil
+			return &entity.ChatMessage{
+				ID:        "msg-1",
+				SessionID: "new-sess-id",
+				Role:      "assistant",
+				Content:   "reply from assistant",
+			}, nil
+		},
+		getSessionFn: func(_ context.Context, id string) (*entity.ChatSession, error) {
+			return &entity.ChatSession{ID: id, VisitorID: "new-visitor-id"}, nil
 		},
 	}
 
-	h := newTestHandler(svc, vsvc)
+	h := newTestHandler(svc, &mockVisitorService{})
 	resp, err := h.SendChatMessage(ctx, &pb.SendChatMessageRequest{
-		Content: "hello world",
+		VisitorId: "new-visitor-id",
+		Content:   "hello world",
 	})
 
 	require.NoError(t, err)
-	assert.True(t, registerCalled, "Register must be called")
-	assert.True(t, createSessionCalled, "CreateSession must be called")
 	assert.Equal(t, "new-sess-id", resp.GetSessionId())
 	assert.Equal(t, "new-visitor-id", resp.GetVisitorId())
-	assert.Equal(t, "hello world", resp.GetContent())
+	assert.Equal(t, "reply from assistant", resp.GetContent())
 }
 
 // TestSendChatMessage_SessionNotFound_CreatesNew verifies that when session_id
 // is provided but GetSession returns ErrRecordNotFound, a new session is
-// created (falls through to the new-session path).
+// created.
 func TestSendChatMessage_SessionNotFound_CreatesNew(t *testing.T) {
 	ctx := context.Background()
 
 	svc := &mockChatService{
+		sendChatMessageFn: func(ctx context.Context, sessionID, visitorID, promptID, content string) (*entity.ChatMessage, error) {
+			return &entity.ChatMessage{ID: "msg-1", SessionID: "created-sess"}, nil
+		},
 		getSessionFn: func(_ context.Context, _ string) (*entity.ChatSession, error) {
-			return nil, gorm.ErrRecordNotFound
-		},
-		createSessionFn: func(_ context.Context, visitorID, _ string) (*entity.ChatSession, error) {
-			return &entity.ChatSession{ID: "created-sess", VisitorID: visitorID}, nil
+			return &entity.ChatSession{ID: "created-sess", VisitorID: "registered-visitor"}, nil
 		},
 	}
 
-	vsvc := &mockVisitorService{
-		registerFn: func(_ context.Context, _ string) (*visitorentity.Visitor, error) {
-			return &visitorentity.Visitor{ID: "registered-visitor"}, nil
-		},
-	}
-
-	h := newTestHandler(svc, vsvc)
+	h := newTestHandler(svc, &mockVisitorService{})
 	resp, err := h.SendChatMessage(ctx, &pb.SendChatMessageRequest{
 		SessionId: "ghost-session",
 		Content:   "anyone there?",
@@ -269,6 +254,9 @@ func TestSendChatMessage_RecentMessages_SlicesLastThree(t *testing.T) {
 	}
 
 	svc := &mockChatService{
+		sendChatMessageFn: func(ctx context.Context, sessionID, visitorID, promptID, content string) (*entity.ChatMessage, error) {
+			return &entity.ChatMessage{ID: "latest", SessionID: "sess"}, nil
+		},
 		getSessionFn: func(_ context.Context, _ string) (*entity.ChatSession, error) {
 			return &entity.ChatSession{ID: "sess", VisitorID: "vis"}, nil
 		},
@@ -284,7 +272,6 @@ func TestSendChatMessage_RecentMessages_SlicesLastThree(t *testing.T) {
 	})
 
 	require.NoError(t, err)
-	// 5 prior messages → only the last 3 are returned
 	assert.Len(t, resp.GetRecentMessages(), 3)
 	assert.Equal(t, "msg3", resp.GetRecentMessages()[0].GetContent())
 	assert.Equal(t, "msg4", resp.GetRecentMessages()[1].GetContent())
@@ -292,12 +279,12 @@ func TestSendChatMessage_RecentMessages_SlicesLastThree(t *testing.T) {
 }
 
 // TestSendChatMessage_GetSession_InternalError verifies that an unexpected
-// error from GetSession propagates as an Internal gRPC status.
+// error from SendChatMessage propagates as an Internal gRPC status.
 func TestSendChatMessage_GetSession_InternalError(t *testing.T) {
 	ctx := context.Background()
 
 	svc := &mockChatService{
-		getSessionFn: func(_ context.Context, _ string) (*entity.ChatSession, error) {
+		sendChatMessageFn: func(ctx context.Context, sessionID, visitorID, promptID, content string) (*entity.ChatMessage, error) {
 			return nil, errors.New("db timeout")
 		},
 	}
@@ -312,51 +299,7 @@ func TestSendChatMessage_GetSession_InternalError(t *testing.T) {
 	st, ok := status.FromError(err)
 	require.True(t, ok)
 	assert.Equal(t, codes.Internal, st.Code())
-	assert.Contains(t, st.Message(), "failed to verify session")
-}
-
-// TestSendChatMessage_RegisterVisitor_Error verifies that a failure in
-// visitor registration returns an Internal gRPC error.
-func TestSendChatMessage_RegisterVisitor_Error(t *testing.T) {
-	ctx := context.Background()
-
-	vsvc := &mockVisitorService{
-		registerFn: func(_ context.Context, _ string) (*visitorentity.Visitor, error) {
-			return nil, errors.New("registry unavailable")
-		},
-	}
-
-	h := newTestHandler(&mockChatService{}, vsvc)
-	_, err := h.SendChatMessage(ctx, &pb.SendChatMessageRequest{
-		Content: "hello",
-	})
-
-	require.Error(t, err)
-	st, _ := status.FromError(err)
-	assert.Equal(t, codes.Internal, st.Code())
-	assert.Contains(t, st.Message(), "failed to register visitor")
-}
-
-// TestSendChatMessage_CreateSession_Error verifies that a failure in session
-// creation returns an Internal gRPC error.
-func TestSendChatMessage_CreateSession_Error(t *testing.T) {
-	ctx := context.Background()
-
-	svc := &mockChatService{
-		createSessionFn: func(_ context.Context, _, _ string) (*entity.ChatSession, error) {
-			return nil, errors.New("session store down")
-		},
-	}
-
-	h := newTestHandler(svc, &mockVisitorService{})
-	_, err := h.SendChatMessage(ctx, &pb.SendChatMessageRequest{
-		Content: "hello",
-	})
-
-	require.Error(t, err)
-	st, _ := status.FromError(err)
-	assert.Equal(t, codes.Internal, st.Code())
-	assert.Contains(t, st.Message(), "failed to create session")
+	assert.Contains(t, st.Message(), "failed to send chat message")
 }
 
 // TestSendChatMessage_ListMessages_InternalError verifies that a non-NotFound
@@ -365,8 +308,8 @@ func TestSendChatMessage_ListMessages_InternalError(t *testing.T) {
 	ctx := context.Background()
 
 	svc := &mockChatService{
-		getSessionFn: func(_ context.Context, _ string) (*entity.ChatSession, error) {
-			return &entity.ChatSession{ID: "sess", VisitorID: "vis"}, nil
+		sendChatMessageFn: func(ctx context.Context, sessionID, visitorID, promptID, content string) (*entity.ChatMessage, error) {
+			return &entity.ChatMessage{ID: "latest", SessionID: "sess"}, nil
 		},
 		listMessagesFn: func(_ context.Context, _ string) ([]entity.ChatMessage, error) {
 			return nil, errors.New("query failed")
@@ -385,54 +328,3 @@ func TestSendChatMessage_ListMessages_InternalError(t *testing.T) {
 	assert.Contains(t, st.Message(), "failed to list messages")
 }
 
-// TestSendChatMessage_CreateMessage_Error verifies that a failure in message
-// creation returns an Internal gRPC error.
-func TestSendChatMessage_CreateMessage_Error(t *testing.T) {
-	ctx := context.Background()
-
-	svc := &mockChatService{
-		getSessionFn: func(_ context.Context, _ string) (*entity.ChatSession, error) {
-			return &entity.ChatSession{ID: "sess", VisitorID: "vis"}, nil
-		},
-		createMessageFn: func(_ context.Context, _, _, _ string) (*entity.ChatMessage, error) {
-			return nil, errors.New("disk full")
-		},
-	}
-
-	h := newTestHandler(svc, &mockVisitorService{})
-	_, err := h.SendChatMessage(ctx, &pb.SendChatMessageRequest{
-		SessionId: "sess",
-		Content:   "hi",
-	})
-
-	require.Error(t, err)
-	st, _ := status.FromError(err)
-	assert.Equal(t, codes.Internal, st.Code())
-	assert.Contains(t, st.Message(), "failed to create message")
-}
-
-// TestSendChatMessage_ListMessages_RecordNotFound_OK verifies that a
-// gorm.ErrRecordNotFound from ListMessages is treated as an empty list (not
-// an error), and the handler still succeeds.
-func TestSendChatMessage_ListMessages_RecordNotFound_OK(t *testing.T) {
-	ctx := context.Background()
-
-	svc := &mockChatService{
-		getSessionFn: func(_ context.Context, _ string) (*entity.ChatSession, error) {
-			return &entity.ChatSession{ID: "sess", VisitorID: "vis"}, nil
-		},
-		listMessagesFn: func(_ context.Context, _ string) ([]entity.ChatMessage, error) {
-			return nil, gorm.ErrRecordNotFound
-		},
-	}
-
-	h := newTestHandler(svc, &mockVisitorService{})
-	resp, err := h.SendChatMessage(ctx, &pb.SendChatMessageRequest{
-		SessionId: "sess",
-		Content:   "first message ever",
-	})
-
-	require.NoError(t, err)
-	assert.Empty(t, resp.GetRecentMessages())
-	assert.Equal(t, "first message ever", resp.GetContent())
-}

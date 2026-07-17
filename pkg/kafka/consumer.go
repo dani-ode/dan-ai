@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"strings"
 	"time"
 	"dan-ai/pkg/config"
 
@@ -75,10 +76,37 @@ func (c *consumer) Consume(ctx context.Context, handler func(ctx context.Context
 			continue
 		}
 
-		if err := handler(ctx, event); err != nil {
-			log.Printf("error handling event %s: %v", event.AggregateID, err)
-			// Depending on retry policy, we could choose not to commit
-			// But for now, let's commit so it moves to the next message
+		// Retry with backoff if handler fails
+		backoff := 5 * time.Second
+		maxRetries := 100
+		var handlerErr error
+		for i := 0; i < maxRetries; i++ {
+			handlerErr = handler(ctx, event)
+			if handlerErr == nil {
+				break
+			}
+			log.Printf("error handling event %s (attempt %d/%d): %v", event.AggregateID, i+1, maxRetries, handlerErr)
+			
+			sleepTime := backoff
+			if strings.Contains(handlerErr.Error(), "429") || strings.Contains(handlerErr.Error(), "quota") {
+				if backoff < 30*time.Second {
+					backoff *= 2
+				}
+				sleepTime = backoff
+				if sleepTime > 30*time.Second {
+					sleepTime = 30 * time.Second
+				}
+			}
+			
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-time.After(sleepTime):
+			}
+		}
+
+		if handlerErr != nil {
+			log.Printf("failed to handle event %s after %d retries, committing to skip: %v", event.AggregateID, maxRetries, handlerErr)
 		}
 
 		if err := c.reader.CommitMessages(ctx, m); err != nil {

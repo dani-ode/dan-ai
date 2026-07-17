@@ -1,14 +1,19 @@
 // internal/prompt/entity/prompt.go
 package entity
 
-import "time"
+import (
+	"time"
+
+	aimodelentity "dan-ai/internal/aimodel/entity"
+)
 
 type Prompt struct {
 	ID           string    `gorm:"type:char(26);primaryKey"`
 	Name         string    `gorm:"type:text;uniqueIndex;not null"`
 	SystemPrompt string    `gorm:"type:text;not null"`
 	Description  string    `gorm:"type:text"`
-	ModelID      string    `gorm:"type:char(26)"`
+	ModelID      string               `gorm:"type:char(26)"`
+	AIModel      aimodelentity.AIModel `gorm:"foreignKey:ModelID"`
 	Active       bool      `gorm:"type:boolean;default:false"`
 	Version      int32     `gorm:"type:int;default:1"`
 	CreatedAt    time.Time `gorm:"type:timestamptz;not null;default:now()"`

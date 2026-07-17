@@ -10,16 +10,18 @@ import (
 
 	aiClient "dan-ai/internal/ai/client"
 	"dan-ai/internal/ai/provider"
+	embeddingrepo "dan-ai/internal/embedding/repository"
 	"dan-ai/internal/knowledge/chunk"
 	"dan-ai/internal/knowledge/processor"
 	"dan-ai/internal/knowledge/repository"
+	promptrepo "dan-ai/internal/prompt/repository"
 	"dan-ai/pkg/config"
 	"dan-ai/pkg/kafka"
 	"dan-ai/pkg/milvus"
 	"dan-ai/pkg/postgres"
 )
 
-const GroupID = "portfolio-embedding-worker"
+const GroupID = "dan-embedding-worker"
 
 func RunEmbeddingWorker() {
 	cfg, err := config.Load()
@@ -36,6 +38,13 @@ func RunEmbeddingWorker() {
 		log.Fatalf("failed to connect to postgres: %v", err)
 	}
 
+	// Initialize embedding repo and active profile config
+	embeddingRepo := embeddingrepo.NewPostgresRepository(db)
+	profile, err := embeddingRepo.GetActiveProfile(ctx)
+	if err != nil {
+		log.Fatalf("failed to get active embedding profile: %v", err)
+	}
+
 	// Initialize Milvus
 	milvusCtx, milvusCancel := context.WithTimeout(ctx, 5*time.Second)
 	mClient, err := milvus.NewClient(milvusCtx, cfg)
@@ -43,26 +52,34 @@ func RunEmbeddingWorker() {
 	if err != nil {
 		log.Fatalf("failed to connect to milvus: %v", err)
 	}
-	if err := mClient.InitCollection(ctx); err != nil {
+	if err := mClient.InitCollection(ctx, profile.KnowledgeCollection, profile.VisitorCollection, profile.Dimension, profile.MetricType); err != nil {
 		log.Fatalf("failed to init milvus collection: %v", err)
 	}
 
-	// Initialize AI
+	// Initialize AI provider registry
+	aiRegistry := provider.NewRegistry()
+
 	genaiClient, err := aiClient.NewClient(ctx, cfg)
 	if err != nil {
-		log.Fatalf("failed to init ai client: %v", err)
+		log.Fatalf("failed to init gemini client: %v", err)
 	}
-	aiProvider := provider.NewGeminiProvider(genaiClient)
+	aiRegistry.Register("gemini", provider.NewGeminiProvider(genaiClient))
+
+	if cfg.AI.OpenAIAPIKey != "" {
+		aiRegistry.Register("openai", provider.NewOpenAIProvider(cfg.AI.OpenAIAPIKey))
+		log.Println("OpenAI provider registered")
+	}
 
 	// Initialize chunk builder
-	chunkBuilder := chunk.NewAIBuilder(aiProvider)
+	chunkBuilder := chunk.NewAIBuilder(aiRegistry)
 
 	// Initialize Knowledge Processor
 	repo := repository.NewPostgresKnowledgeRepository(db)
-	proc := processor.NewProcessor(repo, aiProvider, mClient, chunkBuilder)
+	promptRepo := promptrepo.NewPostgresRepository(db)
+	proc := processor.NewProcessor(repo, aiRegistry, mClient, chunkBuilder, promptRepo, embeddingRepo)
 
 	// Initialize Kafka Consumer
-	consumer := kafka.NewConsumer(cfg, "portfolio.knowledge", GroupID)
+	consumer := kafka.NewConsumer(cfg, "dan.knowledge", GroupID)
 	defer func() {
 		if err := consumer.Close(); err != nil {
 			log.Printf("error closing consumer: %v", err)

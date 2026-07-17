@@ -54,41 +54,47 @@ Background Processing
 ↓
 
 Phase 5
+Knowledge Indexing
 ────────────────────
-Vector Search
 
-• Chunking Pipeline
-• Embedding
-• Milvus
-• Semantic Search
+• Knowledge Builder
+• Chunk Builder
+• Embedding Pipeline
+• Milvus Synchronization
+• Reindex Worker
 
 ↓
 
 Phase 6
-──────────────────
-Knowledge AI
+AI Knowledge
+────────────────────
 
-• Prompt Builder
+• Dynamic Prompt Builder
 • RAG
-• Milvus
+• Retrieval Optimization
 • Tool Calling
+• AI Provider
 
 ↓
 
 Phase 7
-──────────────────
 Long Term Memory
+────────────────────
 
-• Memory Extractor
+• Memory Extraction
 • Memory Consolidation
-• Visitor Memory
-• Visitor Knowledge
+• Importance Score
+• Memory Decay
 • Semantic Recall
+• Memory Reindex
 
 ↓
 
 Phase 8
-──────────────────
 Realtime
+────────────────────
 
 • Streaming
+• Typing Indicator
+• Cancel Generation
+• WebSocket / gRPC Streaming

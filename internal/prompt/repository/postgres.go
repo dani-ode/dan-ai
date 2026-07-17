@@ -28,11 +28,12 @@ func NewPostgresRepository(db *gorm.DB) Repository {
 
 func (r *postgresRepository) Get(ctx context.Context, id string) (*entity.Prompt, error) {
 	var prompt entity.Prompt
-	if err := r.db.WithContext(ctx).First(&prompt, "id = ?", id).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("AIModel").First(&prompt, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return &prompt, nil
 }
+
 
 func (r *postgresRepository) List(ctx context.Context, activeOnly bool) ([]entity.Prompt, error) {
 	var prompts []entity.Prompt

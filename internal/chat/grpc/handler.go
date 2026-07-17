@@ -157,55 +157,18 @@ func (h *Handler) DeleteMessage(ctx context.Context, req *pb.DeleteMessageReques
 // --- Unified Chat handlers ---
 
 func (h *Handler) SendChatMessage(ctx context.Context, req *pb.SendChatMessageRequest) (*pb.SendChatMessageResponse, error) {
-	sessionID := req.GetSessionId()
-	visitorID := req.GetVisitorId()
-	promptID := req.GetPromptId()
-
-	sessionExists := false
-	if sessionID != "" {
-		session, err := h.svc.GetSession(ctx, sessionID)
-		if err == nil {
-			sessionExists = true
-			if visitorID == "" {
-				visitorID = session.VisitorID
-			}
-			if promptID == "" {
-				promptID = session.PromptID
-			}
-		} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, status.Errorf(codes.Internal, "failed to verify session: %v", err)
-		}
+	assistantMsg, err := h.svc.SendChatMessage(ctx, req.GetSessionId(), req.GetVisitorId(), req.GetPromptId(), req.GetContent())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to send chat message: %v", err)
 	}
 
-	if !sessionExists {
-		// Register visitor (upsert or create if not exists)
-		visitor, err := h.visitorSvc.Register(ctx, visitorID)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to register visitor: %v", err)
-		}
-		visitorID = visitor.ID
-
-		// Create session
-		session, err := h.svc.CreateSession(ctx, visitorID, promptID)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to create session: %v", err)
-		}
-		sessionID = session.ID
-	}
-
-	// Get recent messages BEFORE creating the new one (so the new one is not included)
-	messages, err := h.svc.ListMessages(ctx, sessionID)
+	// Fetch recent messages for the response (the last 3 messages)
+	messages, err := h.svc.ListMessages(ctx, assistantMsg.SessionID)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, status.Errorf(codes.Internal, "failed to list messages: %v", err)
 	}
 
-	// Create user message
-	_, err = h.svc.CreateMessage(ctx, sessionID, "user", req.GetContent())
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to create message: %v", err)
-	}
-
-	// Slicing the last 3 messages from BEFORE the new message was inserted
+	// Slicing the last 3 messages (e.g. recent dialogue context)
 	startIndex := 0
 	if len(messages) > 3 {
 		startIndex = len(messages) - 3
@@ -221,10 +184,16 @@ func (h *Handler) SendChatMessage(ctx context.Context, req *pb.SendChatMessageRe
 		})
 	}
 
+	session, err := h.svc.GetSession(ctx, assistantMsg.SessionID)
+	visitorID := req.GetVisitorId()
+	if err == nil {
+		visitorID = session.VisitorID
+	}
+
 	return &pb.SendChatMessageResponse{
-		SessionId:      sessionID,
+		SessionId:      assistantMsg.SessionID,
 		VisitorId:      visitorID,
-		Content:        req.GetContent(),
+		Content:        assistantMsg.Content,
 		RecentMessages: recentContent,
 	}, nil
 }

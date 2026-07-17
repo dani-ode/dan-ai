@@ -38,6 +38,7 @@ type Config struct {
 	}
 	AI struct {
 		GeminiAPIKey string
+		OpenAIAPIKey string
 	}
 }
 
@@ -84,6 +85,7 @@ func Load() (*Config, error) {
 
 	// AI config
 	cfg.AI.GeminiAPIKey = getEnv("GEMINI_API_KEY", "")
+	cfg.AI.OpenAIAPIKey = getEnv("OPENAI_API_KEY", "")
 
 	Current = cfg
 	return cfg, nil

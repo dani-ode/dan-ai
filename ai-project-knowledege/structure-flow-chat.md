@@ -6,22 +6,24 @@ Frontend (Vue)
    ▼
 ChatService
    │
-   ├── Save User Message
+   ├── Save User Message (PostgreSQL)
    │
-   ├── Search dan_knowledge
+   ├── Generate Query Embedding
    │
-   ├── Search visitor_knowledge
+   ├── Search dan_knowledge (Milvus)
+   │
+   ├── Search visitor_knowledge (Milvus)
    │      (filter visitor_id)
    │
-   ├── Load Recent Chat
+   ├── Load Recent Chat (PostgreSQL)
    │
    ├── Build Prompt
    │
    ├── LLM
    │
-   ├── Save Assistant Message
+   ├── Save Assistant Message (PostgreSQL)
    │
-   ├── Publish chat.completed
+   ├── Publish chat.completed (Kafka)
    │
    ▼
 Response
@@ -30,8 +32,8 @@ Response
 Visitor
 
 
-──────────────────────────────────
-
+────────────────────────────────────────────────────────
+---  background process ----
 
 chat.completed
       │
@@ -39,32 +41,38 @@ chat.completed
 Memory Worker
       │
       ▼
-Load Conversation
+Load User Message
++
+Load Assistant Message
+(PostgreSQL)
       │
       ▼
-Extract Memory
+Extract Memory (LLM)
       │
       ▼
-save=false ?
+save == false ?
       │
  ┌────┴────┐
  │         │
 Yes        No
  │          │
 End         ▼
-       Embedding
+      Search Existing Memory
+      (Milvus)
             │
             ▼
- Search visitor_knowledge
+     Memory Consolidation
             │
             ▼
-   Consolidation
+ Update / Insert Memory
+(PostgreSQL visitor_knowledge)
             │
             ▼
-     Update/Insert
+ Generate Embedding
             │
             ▼
-   visitor_knowledge
+ Update / Insert Vector
+(Milvus visitor_knowledge)
 
 
 ──────────────────────────────────
@@ -378,13 +386,12 @@ Vector
 
 
 # 15. Search Existing Memory
-
 Milvus
 
+Collection:
 visitor_knowledge
 
-filter:
-
+Filter:
 visitor_id == "01K..."
 
 Top 3
@@ -396,45 +403,60 @@ Misalnya ditemukan:
 
 Visitor sedang belajar Kafka.
 
-dan memory baru:
+Memory baru:
 
 Visitor sedang mempelajari Kafka untuk membangun Portfolio AI.
 
-Similarity:
-
-0.94
-
-Maka lakukan merge.
-
-Prompt:
-
-Combine memory A and B
-into a better memory.
-
-Hasil:
+LLM menghasilkan:
 
 Visitor sedang membangun Portfolio AI dan mempelajari Kafka sebagai event bus.
 
 
-# 17. Update atau Insert
+# 17. Update Source of Truth
 
 Jika mirip:
 
-UPDATE
+UPDATE visitor_knowledge (PostgreSQL)
 
 Jika tidak mirip:
 
-INSERT
+INSERT visitor_knowledge (PostgreSQL)
 
-ke collection:
+Contoh isi tabel:
 
-visitor_knowledge
+id
+visitor_id
+category
+memory_text
+importance
+created_at
+updated_at
 
+
+# 18. Generate Embedding
+
+memory_text
+
+↓
+
+Embedding Service
+
+↓
+
+Vector
+
+
+# 19. Sinkronisasi Milvus
+
+UPSERT
+
+visitor_knowledge_e5
+(Milvus)
+
+id
+visitor_id
+embedding
 
 # Dengan flow ini:
 
-PostgreSQL = source of truth semua chat.
-dan_knowledge = pengetahuan tentang dirimu.
-visitor_knowledge = memori jangka panjang per visitor.
-Kafka = pemrosesan background.
-LLM = hanya dipanggil saat menjawab chat dan saat ekstraksi memory.
+Dengan urutan ini, PostgreSQL selalu menjadi Source of Truth, sedangkan Milvus hanya menjadi vector index. Jika suatu saat kamu mengganti model embedding atau melakukan re-index, cukup membaca ulang seluruh data dari tabel visitor_knowledge di PostgreSQL tanpa kehilangan informasi apa pun.

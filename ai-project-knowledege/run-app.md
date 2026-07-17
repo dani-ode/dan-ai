@@ -1,5 +1,9 @@
 <!-- re run the app -->
 
+make docker-up
+
+<!-- or -------------------------------------------- -->
+
 docker compose --env-file .env -f deployments/compose/docker-compose.yml down
 
 $env:GOOS='linux'; $env:GOARCH='amd64'; $env:CGO_ENABLED='0'; go build -o bin/api ./apps/api
