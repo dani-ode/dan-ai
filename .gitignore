@@ -7,4 +7,5 @@ vendor/
 .DS_Store
 .idea/
 .vscode/
-blueprint/
+.blueprint/
+
